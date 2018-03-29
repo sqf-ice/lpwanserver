@@ -346,7 +346,9 @@ NetworkProtocolAccess.prototype.pushApplication = function( dataAPI, network, ap
 
         var loginData = await netProto.api.getApplicationAccessAccount( dataAPI, network, applicationId );
 
-        console.log(loginData);
+        if (!loginData) {
+            loginData = {username:"testCompanyadmin","password":"admin"}
+        }
         // Use a session wrapper to call the function. (Session
         // wrapper manages logging in if session was not already set
         // up or is expired)
