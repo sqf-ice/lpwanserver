@@ -183,7 +183,7 @@ console.log( "Submitting: state = ", this.state );
                 // ...and we had an old record with a data change: UPDATE
                 else if ( JSON.stringify( this.state.value ) !== this.state.original ) {
                     var updRec = {
-                        id: this.state.value.id,
+                        id: this.state.rec.id,
                         networkSettings: this.state.value
                     };
                     await applicationStore.updateApplicationNetworkType( updRec );
