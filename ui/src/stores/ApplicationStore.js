@@ -57,6 +57,7 @@ class ApplicationStore extends EventEmitter {
       updateApplication( application ) {
           return new Promise( function( resolve, reject ) {
               let header = sessionStore.getHeader();
+              console.log(application);
               fetch( rest_url + "/api/applications/" + application.id,
                      {
                          method: "PUT",
