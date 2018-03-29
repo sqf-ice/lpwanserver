@@ -917,7 +917,9 @@ exports.addApplication = function( sessionData, network, applicationId, dataAPI 
         options.json = {
             "name": application.name,
             "organizationID": coNetworkId,
-            "serviceProfileID": coSPId };
+            "serviceProfileID": coSPId,
+            "description": "Application managed by LPWAN Server, perform changes via LPWAN"
+        };
         options.agentOptions = {
             "secureProtocol": "TLSv1_2_method",
             "rejectUnauthorized": false };
@@ -1039,7 +1041,9 @@ exports.updateApplication = function( sessionData, network, applicationId, dataA
                             "Authorization": "Bearer " + sessionData.connection };
         options.json = {
             "name": application.name,
-            "organizationID": coNetworkId };
+            "organizationID": coNetworkId,
+            "description": "Application managed by LPWAN Server, perform changes via LPWAN"
+        };
         options.agentOptions = {
             "secureProtocol": "TLSv1_2_method",
             "rejectUnauthorized": false };
@@ -1385,6 +1389,7 @@ exports.addDeviceProfile = function( sessionData, network, deviceProfileId, data
             options.json = {
                 "name": deviceProfile.name,
                 "networkServerID": networkServerId,
+                "description": "Device Profile managed by LPWAN Server, perform changes via LPWAN",
                 "organizationID": coNetworkId,
                 "deviceProfile": {
                     "macVersion": "1.0.2",
@@ -1590,6 +1595,7 @@ exports.updateDeviceProfile = function( sessionData, network, deviceProfileId, d
                             "Authorization": "Bearer " + sessionData.connection };
         options.json = {
             "name": deviceProfile.name,
+            "description": "Device Profile managed by LPWAN Server, perform changes via LPWAN",
             "organizationID": coNetworkId };
         options.agentOptions = {
             "secureProtocol": "TLSv1_2_method",
@@ -1913,7 +1919,8 @@ exports.addDevice = function( sessionData, network, deviceId, dataAPI ) {
             "description": device.name,
             "devEUI": dntl.networkSettings.devEUI,
             "deviceProfileID": dpNwkId,
-            "name": device.name
+            "name": device.name,
+            "description": "Device managed by LPWAN Server, perform changes via LPWAN",
         };
 
         options.agentOptions = {
@@ -2100,7 +2107,8 @@ exports.updateDevice = function( sessionData, network, deviceId, dataAPI ) {
             "description": device.name,
             "devEUI": dntl.networkSettings.devEUI,
             "deviceProfileID": dpNwkId,
-            "name": device.name
+            "name": device.name,
+            "description": "Device managed by LPWAN Server, perform changes via LPWAN",
         };
         options.agentOptions = {
             "secureProtocol": "TLSv1_2_method",
