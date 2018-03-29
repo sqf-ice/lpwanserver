@@ -1079,6 +1079,7 @@ exports.updateApplication = function( sessionData, network, applicationId, dataA
             }
         }
 
+        appLogger.log('Updated app ' + JSON.stringify(options));
         request( options, function( error, response, body ) {
             if ( error ) {
                 dataAPI.addLog( network,"Error on update application: " + error );
