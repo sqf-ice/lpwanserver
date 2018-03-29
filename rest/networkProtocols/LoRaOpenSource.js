@@ -1078,8 +1078,8 @@ exports.updateApplication = function( sessionData, network, applicationId, dataA
                 options.json.installationMargin = applicationData.networkSettings.installationMargin;
             }
         }
-
         appLogger.log('Updated app ' + JSON.stringify(options));
+
         request( options, function( error, response, body ) {
             if ( error ) {
                 dataAPI.addLog( network,"Error on update application: " + error );
@@ -1153,6 +1153,7 @@ exports.deleteApplication = function( sessionData, network, applicationId, dataA
 exports.pushApplication = function( sessionData, network, applicationId, dataAPI ) {
     return new Promise( async function( resolve, reject ) {
         // Try a "get" to see if the application is already there.
+        appLogger.log('Pushing app ' + applicationId);
         var app;
         try {
             app = await exports.getApplication( sessionData, network, applicationId, dataAPI );
@@ -1178,6 +1179,7 @@ exports.pushApplication = function( sessionData, network, applicationId, dataAPI
 
         // Get worked - do an update.
         try {
+            appLogger.log('Calling update' + applicationId);
             await exports.updateApplication( sessionData, network, applicationId, dataAPI );
         }
         catch( err ) {
