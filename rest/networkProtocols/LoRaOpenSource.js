@@ -980,6 +980,7 @@ exports.addApplication = function( sessionData, network, applicationId, dataAPI 
 // networks, so logging should be done via the dataAPI.
 exports.getApplication = function( sessionData, network, applicationId, dataAPI ) {
     return new Promise( async function( resolve, reject ) {
+        appLogger.log('Getting remote app Id  for' + applicationId)
         var appNetworkId = await dataAPI.getProtocolDataForKey(
                                                 network.id,
                                                 network.networkProtocolId,
@@ -1154,9 +1155,9 @@ exports.deleteApplication = function( sessionData, network, applicationId, dataA
 exports.pushApplication = function( sessionData, network, applicationId, dataAPI ) {
     return new Promise( async function( resolve, reject ) {
         // Try a "get" to see if the application is already there.
-        appLogger.log('Pushing app ' + applicationId);
         var app;
         try {
+            appLogger.log('Pushing app ' + applicationId);
             app = await exports.getApplication( sessionData, network, applicationId, dataAPI );
         }
         catch ( err ) {
