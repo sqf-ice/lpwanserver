@@ -247,6 +247,10 @@ exports.initialize = function( app, server ) {
                 }
             }
 
+            appLogger.log("changed = " + changed);
+            appLogger.log(JSON.stringify(req.body.networkSettings));
+            appLogger.log(JSON.stringify(anl.networkSettings));
+
             // Ready.  Do we have anything to actually change?
             if ( 0 == changed ) {
                 // No changes.  But returning 304 apparently causes Apache to strip
@@ -262,6 +266,7 @@ exports.initialize = function( app, server ) {
                      companyId = req.user.companyId;
                 }
 
+                appLogger.log("Updating the App NTL");
                 // Do the update.
                 modelAPI.applicationNetworkTypeLinks.updateApplicationNetworkTypeLink( data, companyId ).then( function ( rec ) {
                     restServer.respondJson( res, 200,  { remoteAccessLogs: rec.remoteAccessLogs } );
