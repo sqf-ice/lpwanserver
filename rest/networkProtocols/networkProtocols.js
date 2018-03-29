@@ -339,12 +339,14 @@ NetworkProtocolAccess.prototype.addApplication = function( dataAPI, network, app
 // the implementation is completely up to the developers of the protocols.
 NetworkProtocolAccess.prototype.pushApplication = function( dataAPI, network, applicationId ) {
     var me = this;
+    appLogger.log('Should not be here');
     return new Promise( async function( resolve, reject ) {
         // Get the protocol for the network.
         var netProto = await me.getProtocol( network );
 
         var loginData = await netProto.api.getApplicationAccessAccount( dataAPI, network, applicationId );
 
+        console.log(loginData);
         // Use a session wrapper to call the function. (Session
         // wrapper manages logging in if session was not already set
         // up or is expired)
