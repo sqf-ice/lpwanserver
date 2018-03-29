@@ -83,6 +83,7 @@ ApplicationNetworkTypeLink.prototype.updateApplicationNetworkTypeLink = function
     return new Promise( async function( resolve, reject ) {
         try {
             var rec = await me.impl.updateApplicationNetworkTypeLink( applicationNetworkTypeLink, validateCompanyId );
+            appLogger.log('Pushing application' + rec.applicationId);
             var logs = await modelAPI.networkTypeAPI.pushApplication( rec.networkTypeId, rec.applicationId, rec.networkSettings );
             rec.remoteAccessLogs = logs;
             resolve( rec );
