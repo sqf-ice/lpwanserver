@@ -189,6 +189,12 @@ console.log( "Submitting: state = ", this.state );
                     await applicationStore.updateApplicationNetworkType( updRec );
                     ret = this.props.name + " is updated.";
                 }
+                else {
+                    console.log('Huh?');
+                    console.log(this.state.value);
+                    console.log(this.state.original);
+
+                }
             }
             // Type is NOT enabled AND we had a record: DELETE
             else if ( this.state.wasEnabled ) {
