@@ -984,6 +984,7 @@ exports.getApplication = function( sessionData, network, applicationId, dataAPI 
                                                 network.id,
                                                 network.networkProtocolId,
                                                 makeApplicationDataKey( applicationId, "appNwkId" ) );
+        appLogger.log('Remote App Id is ' + appNetworkId)
         // Set up the request options.
         var options = {};
         options.method = 'GET';
