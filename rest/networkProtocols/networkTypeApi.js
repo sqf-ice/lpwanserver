@@ -234,6 +234,7 @@ NetworkTypeApi.prototype.pushApplication = function( networkTypeId, applicationI
                 "Push Application",
                 networkTypeId,
                 function( npda, network ) {
+                    appLogger.log('network is ' + JSON.stringify((network)));
                     return protos.pushApplication( npda, network, applicationId );
                 });
 }
