@@ -1,6 +1,7 @@
 // Configuration access.
 var nconf = require('nconf');
 var NetworkProtocolDataAccess = require( "../networkProtocols/networkProtocolDataAccess" );
+var appLogger = require( "./lib/appLogger.js" );
 
 //******************************************************************************
 // The Network interface.
