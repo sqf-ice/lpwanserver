@@ -44,6 +44,7 @@ function ApplicationNetworkTypeLink( server ) {
 // Returns the promise that will execute the create.
 ApplicationNetworkTypeLink.prototype.createApplicationNetworkTypeLink = function( applicationId, networkTypeId, networkSettings, validateCompanyId ) {
     var me = this;
+    appLogger.log('It is the right one');
     return new Promise( async function( resolve, reject ) {
         try {
             var rec = await me.impl.createApplicationNetworkTypeLink( applicationId, networkTypeId, networkSettings, validateCompanyId );
