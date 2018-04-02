@@ -156,7 +156,7 @@ Network.prototype.pullNetwork = function( networkId  ) {
     return new Promise( async function( resolve, reject ) {
         try {
             appLogger.log(networkId);
-            let network = me.impl.retrieveNetworks();
+            let network = await me.impl.retrieveNetwork(networkId);
             appLogger.log(JSON.stringify(network));
             await modelAPI.companies.pullCompanies( network );
             // var logs = await modelAPI.networkTypeAPI.pullCompany( networkTypeId );
