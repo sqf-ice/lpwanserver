@@ -151,10 +151,11 @@ Network.prototype.deleteNetwork = function( id ) {
 // networkTypeId - the network to be pulled from.
 //
 // Returns a promise that executes the pull.
-Network.prototype.pullNetwork = function( networkTypeId  ) {
+Network.prototype.pullNetwork = function( networkId  ) {
+    let me = this;
     return new Promise( async function( resolve, reject ) {
         try {
-            let network = this.impl.retrieveNetwork(networkTypeId);
+            let network = me.impl.retrieveNetwork(networkId);
             await modelAPI.companies.pullCompanies( network );
             // var logs = await modelAPI.networkTypeAPI.pullCompany( networkTypeId );
             // let companies = JSON.parse(logs[Object.keys(logs)[0]].logs);
