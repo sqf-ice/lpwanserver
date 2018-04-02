@@ -172,12 +172,28 @@ NetworkTypeApi.prototype.pushCompany = function( networkTypeId, companyId ) {
 //                 to.
 //
 // Returns a Promise that pushes changes to the remote network of type.
-NetworkTypeApi.prototype.pullCompany = function( networkTypeId ) {
+NetworkTypeApi.prototype.pullCompanies = function( networkTypeId ) {
     return createPromiseOperationForNetworksOfType(
-        "Pull Company",
+        "Pull Companies",
         networkTypeId,
         function( npda, network ) {
-            return protos.pullCompany( npda, network );
+            return protos.pullCompanies( npda, network );
+        });
+}
+
+// Add company protocol data to access the remote network.
+//
+// networkTypeId - The networkTypes record id  identifying the networks to push
+//                 to.
+// company - the company object with a remote network
+//
+// Returns a Promise that pushes changes to the remote network of type.
+NetworkTypeApi.prototype.addProtocolDataForCompany = function( networkTypeId, remoteOrganization, localCompany ) {
+    return createPromiseOperationForNetworksOfType(
+        "Add Protocol Data For Company",
+        networkTypeId,
+        function( npda, network ) {
+            return protos.addProtocolDataForCompany( npda, network, remoteOrganization, localCompany );
         });
 }
 

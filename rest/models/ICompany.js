@@ -12,7 +12,7 @@ var types = {};
 // Maps a numeric value to the type name.
 var reverseTypes = {};
 
-// Gives access to oither data
+// Gives access to other data
 var modelAPI;
 
 // Class constructor.
@@ -84,6 +84,42 @@ Company.prototype.createCompany = function( name, type ) {
 // Returns a promise that executes the update.
 Company.prototype.updateCompany = function( record ) {
     return this.impl.updateCompany( record );
+}
+
+// Pull the company records.
+//
+// company - the updated record.  Note that the id must be unchanged from
+//           retrieval to guarantee the same record is updated.
+//
+// Returns a promise that executes the update.
+Company.prototype.pullCompanies = function( network ) {
+    //Plan:
+    //pull companies from the network
+    //add companies to the local db
+    //add companies login information to protocol data
+    let me = this;
+    return new Promise( async function(resolve, reject) {
+        try {
+            // let remoteCompanies = await me.modelAPI.networkTypeAPI.pullCompanies( networkId );
+            var proto = await modelAPI.networkProtocols.getProtocol( network );
+            let remoteCompanies = await proto.pullCompanies( modelAPI, network );
+            appLogger.log(JSON.stringify(remoteCompanies));
+            if (!remoteCompanies || remoteCompanies.length == 0) {
+                resolve();
+            }
+            else {
+                // for (let index in remoteCompanies) {
+                //     let newCompany = me.impl.remoteCreate(remoteCompanies[index].name, this.impl.COMPANY_VENDOR);
+                //     let newCompanyNetworkTypeLink = me.modelAPI.companyNetworkTypeLinks.remoteCreateCompanyNetworkType(newCompany.id, networkId, {region: ''});
+                //     me.modelAPI.networkTypeAPI.addProtocolData(networkId, remoteCompanies[index], newCompany);
+                // }
+                resolve();
+            }
+        }
+        catch( err ) {
+            reject( err );
+        }
+    })
 }
 
 // Delete the company record.

@@ -146,49 +146,49 @@ Network.prototype.deleteNetwork = function( id ) {
 
 
 
-// Pull the companyNetworkTypeLinks record.
+// Pull the organization, applications, device profiles, and devices record.
 //
-// companyNetworkTypeLinks - the record to be pushed.  Note that the id must be
-//                           unchanged from retrieval to guarantee the same
-//                           record is updated.
+// networkTypeId - the network to be pulled from.
 //
-// Returns a promise that executes the update.
+// Returns a promise that executes the pull.
 Network.prototype.pullNetwork = function( networkTypeId  ) {
     return new Promise( async function( resolve, reject ) {
         try {
-            var logs = await modelAPI.networkTypeAPI.pullCompany( networkTypeId );
-            let companies = JSON.parse(logs[Object.keys(logs)[0]].logs);
-            appLogger.log(companies);
-            let nsCoId = [];
-            let localCoId = [];
-            for (var index in companies.result) {
-                let company = companies.result[index];
-                //Mapping of Org Ids to Company Ids
-                nsCoId.push(company.id);
-
-                //see if it exists first
-                let existingCompany = await modelAPI.companies.retrieveCompanies({search: company.name});
-                if (existingCompany.totalCount > 0 ) {
-                    existingCompany = existingCompany.records[0];
-                    appLogger.log(company.name + ' already exists');
-                    localCoId.push(existingCompany.id);
-                }
-                else {
-                    appLogger.log('creating ' + company.name);
-                    existingCompany = await modelAPI.companies.createCompany(company.name, modelAPI.companies.COMPANY_VENDOR);
-                    localCoId.push(existingCompany.id);
-                }
-                //see if it exists first
-                let existingCompanyNTL = await modelAPI.companyNetworkTypeLinks.retrieveCompanyNetworkTypeLinks({companyId: existingCompany.id});
-                if (existingCompanyNTL.totalCount > 0 ) {
-                    appLogger.log(company.name + ' link already exists');
-                }
-                else {
-                    appLogger.log('creating Network Link for ' + company.name);
-                    modelAPI.companyNetworkTypeLinks.createCompanyNetworkTypeLink(existingCompany.id, networkTypeId, {region: ''})
-                }
-
-            }
+            let network = this.impl.retrieveNetwork(networkTypeId);
+            await modelAPI.companies.pullCompanies( network );
+            // var logs = await modelAPI.networkTypeAPI.pullCompany( networkTypeId );
+            // let companies = JSON.parse(logs[Object.keys(logs)[0]].logs);
+            // appLogger.log(companies);
+            // let nsCoId = [];
+            // let localCoId = [];
+            // for (var index in companies.result) {
+            //     let company = companies.result[index];
+            //     //Mapping of Org Ids to Company Ids
+            //     nsCoId.push(company.id);
+            //
+            //     //see if it exists first
+            //     let existingCompany = await modelAPI.companies.retrieveCompanies({search: company.name});
+            //     if (existingCompany.totalCount > 0 ) {
+            //         existingCompany = existingCompany.records[0];
+            //         appLogger.log(company.name + ' already exists');
+            //         localCoId.push(existingCompany.id);
+            //     }
+            //     else {
+            //         appLogger.log('creating ' + company.name);
+            //         existingCompany = await modelAPI.companies.createCompany(company.name, modelAPI.companies.COMPANY_VENDOR);
+            //         localCoId.push(existingCompany.id);
+            //     }
+            //     //see if it exists first
+            //     let existingCompanyNTL = await modelAPI.companyNetworkTypeLinks.retrieveCompanyNetworkTypeLinks({companyId: existingCompany.id});
+            //     if (existingCompanyNTL.totalCount > 0 ) {
+            //         appLogger.log(company.name + ' link already exists');
+            //     }
+            //     else {
+            //         appLogger.log('creating Network Link for ' + company.name);
+            //         modelAPI.companyNetworkTypeLinks.createCompanyNetworkTypeLink(existingCompany.id, networkTypeId, {region: ''})
+            //     }
+            //
+            // }
             logs = await modelAPI.networkTypeAPI.pullApplication( networkTypeId );
             let applications = JSON.parse(logs[Object.keys(logs)[0]].logs);
             appLogger.log(applications);

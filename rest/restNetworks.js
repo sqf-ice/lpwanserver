@@ -350,7 +350,7 @@ exports.initialize = function( app, server ) {
     });
 
     /**
-     * Pushes the companyNetworkTypeLinks record with the specified id.
+     * Pulls the company records from the network with the specified id.
      * - Only a user with the admin company or the admin of the device's
      *   company can delete an device. TODO: Is this true?
      */

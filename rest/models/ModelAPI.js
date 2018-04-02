@@ -73,7 +73,7 @@ function ModelAPI( app ) {
     // The reportingProtocol model.
     this.reportingProtocols = new ReportingProtocolModel();
 
-    // The applicationNetworkTypeLink model.
+    // The ]/NetworkTypeLink model.
     this.applicationNetworkTypeLinks = new ApplicationNetworkTypeLinkModel( this );
 
     // The application model.  Needs the express app because when it starts, it
