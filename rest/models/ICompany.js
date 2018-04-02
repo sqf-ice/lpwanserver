@@ -101,7 +101,7 @@ Company.prototype.pullCompanies = function( network ) {
     return new Promise( async function(resolve, reject) {
         try {
             // let remoteCompanies = await me.modelAPI.networkTypeAPI.pullCompanies( networkId );
-            var proto = await modelAPI.networkProtocols.getProtocol( network );
+            var proto = await modelAPI.networkProtocolAPI.getProtocol( network );
             let remoteCompanies = await proto.pullCompanies( modelAPI, network );
             appLogger.log(JSON.stringify(remoteCompanies));
             if (!remoteCompanies || remoteCompanies.length == 0) {
