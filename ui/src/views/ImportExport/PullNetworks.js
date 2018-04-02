@@ -13,6 +13,7 @@ class PullNetworks extends Component {
             errorMsg: '',
             networkId: this.props.match.params.networkID
         };
+        console.log(this.props.match.params);
         networkStore.pullNetwork(this.props.match.params.networkID)
             .then(() => {
                 this.setState({loading: false, error: false});
