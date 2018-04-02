@@ -39,6 +39,8 @@ NetworkProtocolAccess.prototype.getProtocol = function( network ) {
                 appLogger.log(JSON.stringify(network));
                 // We'll need the protocol for the network.
                 var np = await me.npAPI.retrieveNetworkProtocol( network.networkProtocolId );
+                appLogger.log(JSON.stringify(np));
+
                 networkProtocolMap[ id ] = {};
                 networkProtocolMap[ id ][ 'sessionData' ] = {};
                 networkProtocolMap[ id ][ 'api' ] = new require( './' + np.protocolHandler );
