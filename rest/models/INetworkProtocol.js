@@ -30,4 +30,9 @@ NetworkProtocol.prototype.deleteNetworkProtocol = function( id ) {
     return this.impl.deleteNetworkProtocol( id );
 }
 
+NetworkProtocol.prototype.getProtocol = function( network ) {
+    return this.impl.getProtocol( network );
+}
+
+
 module.exports = NetworkProtocol;
