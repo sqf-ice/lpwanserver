@@ -117,7 +117,7 @@ Company.prototype.pullCompanies = function( network ) {
                 remoteCompanies = remoteCompanies.result;
                 for (let index in remoteCompanies) {
                     appLogger.log(remoteCompanies[index]);
-                    let newCompany = me.impl.createCompany(remoteCompanies[index].name, this.impl.COMPANY_VENDOR);
+                    let newCompany = me.impl.createCompany(remoteCompanies[index].name, me.COMPANY_VENDOR);
                     let newCompanyNetworkTypeLink = me.modelAPI.companyNetworkTypeLinks.remoteCreateCompanyNetworkTypeLink(newCompany.id, network.networkTypeId, {region: ''});
                     me.modelAPI.networkTypeAPI.addProtocolDataForCompany(network.networkTypeId, remoteCompanies[index], newCompany);
                 }
