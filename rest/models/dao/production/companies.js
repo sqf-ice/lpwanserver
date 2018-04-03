@@ -75,8 +75,6 @@ exports.remoteCreateCompany = function( name, type ) {
                     }
                 });
             })
-
-
     });
 }
 

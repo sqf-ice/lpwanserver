@@ -63,7 +63,7 @@ CompanyNetworkTypeLink.prototype.remoteCreateCompanyNetworkTypeLink = function( 
     var me = this;
     return new Promise( async function( resolve, reject ) {
         try {
-            var rec = await me.impl.createCompanyNetworkTypeLink( companyId, networkTypeId, networkSettings );
+            var rec = await me.impl.remoteCreateCompanyNetworkTypeLink( companyId, networkTypeId, networkSettings );
             // var logs = await modelAPI.networkTypeAPI.addCompany( networkTypeId, companyId, networkSettings );
             resolve( rec );
         }

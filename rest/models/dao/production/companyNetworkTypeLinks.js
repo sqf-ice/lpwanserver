@@ -41,6 +41,46 @@ exports.createCompanyNetworkTypeLink = function( companyId, networkTypeId, netwo
     });
 }
 
+// Create the companyNetworkTypeLinks record remote
+//
+// companyId       - The id for the company this link is being created for
+// networkTypeId       - The id for the network the company is linked to
+// networkSettings - The settings required by the network protocol in json
+//                   format
+//
+// Returns the promise that will execute the create.
+exports.remoteCreateCompanyNetworkTypeLink = function( companyId, networkTypeId, networkSettings ) {
+    let me = this;
+    return new Promise( function( resolve, reject ) {
+        // Create the user record.
+
+
+        me.retrieveCompanyNetworkTypeLinks({companyId: companyId} )
+            .then((existingCompanyNTL) => {
+                resolve(existingCompanyNTL);
+            })
+            .catch(() => {
+                // OK, save it!
+                var cnl = {};
+                cnl.companyId = companyId;
+                cnl.networkTypeId = networkTypeId;
+                if ( networkSettings ) {
+                    cnl.networkSettings = JSON.stringify( networkSettings );
+                }
+                // OK, save it!
+                db.insertRecord("companyNetworkTypeLinks", cnl, function( err, record ) {
+                    if ( err ) {
+                        reject( err );
+                    }
+                    else {
+                        resolve( record );
+                    }
+                });
+            })
+
+    });
+}
+
 // Retrieve a companyNetworkTypeLinks record by id.
 //
 // id - the record id of the companyNetworkTypeLinks record.
