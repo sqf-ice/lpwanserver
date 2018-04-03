@@ -2477,75 +2477,85 @@ exports.pullDevices = function (sessionData, network, applicationId, dataAPI) {
 exports.addProtocolDataForCompany = function (sessionData, network, remoteOrganization, localCompany, dataAPI) {
     return new Promise(async function (resolve, reject) {
         try {
-            // Save the company ID from the remote network.
-            await dataAPI.putProtocolDataForKey(network.id,
+            dataAPI.getProtocolDataForKey(
+                network.id,
                 network.networkProtocolId,
-                makeCompanyDataKey(localCompany.id, "coNwkId"),
-                remoteOrganization.id);
-            var networkCoId = remoteOrganization.id;
-
-            // We will need an admin user for this company.
-            var userOptions = {};
-            userOptions.method = 'POST';
-            userOptions.url = network.baseUrl + "/users";
-            userOptions.headers = {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + sessionData.connection
-            };
-
-            // Get/generate the company username/password
-            var creds = await getCompanyAccount(dataAPI, network, localCompany.id, true);
-
-            userOptions.json = {
-                "username": creds.username,
-                "password": creds.password,
-                "isActive": true,
-                "isAdmin": false,
-                "sessionTTL": 0,
-                "organizations": [
-                    {
-                        "isAdmin": true,
-                        "organizationID": networkCoId
-                    }
-                ],
-                "email": "fake@emailaddress.com",
-                "note": "Created by and for LPWAN Server"
-            };
-            userOptions.agentOptions = {
-                "secureProtocol": "TLSv1_2_method",
-                "rejectUnauthorized": false
-            };
-
-
-            request(userOptions, async function (error, response, body) {
-                if (error || response.statusCode >= 400) {
-                    if (error) {
-                        dataAPI.addLog(network, "Error creating " + localCompany.name +
-                            "'s admin user " + userOptions.json.username +
-                            ": " + error);
-                        reject(error);
-                        return;
-                    }
-                    else {
-
-                        dataAPI.addLog(network, "Error creating " + localCompany.name +
-                            "'s admin user " + userOptions.json.username +
-                            ": " + response.statusCode +
-                            " (Server message: " + response.body.error + ")");
-                        reject(response.statusCode);
-                        return;
-                    }
-                }
-                else {
-                    // Save the user ID from the remote network.
+                makeCompanyDataKey(localCompany, "coNwkId"))
+                .then(() =>{
+                    //already exists so just return
+                    resolve();
+                })
+                .catch(() => {
+                    // Save the company ID from the remote network.
                     await dataAPI.putProtocolDataForKey(network.id,
                         network.networkProtocolId,
-                        makeCompanyDataKey(localCompany.id, "coUsrId"),
-                        body.id);
-                    resolve();
-                }
+                        makeCompanyDataKey(localCompany.id, "coNwkId"),
+                        remoteOrganization.id);
+                    var networkCoId = remoteOrganization.id;
 
-            }); // End of user create request.
+                    // We will need an admin user for this company.
+                    var userOptions = {};
+                    userOptions.method = 'POST';
+                    userOptions.url = network.baseUrl + "/users";
+                    userOptions.headers = {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + sessionData.connection
+                    };
+
+                    // Get/generate the company username/password
+                    var creds = await getCompanyAccount(dataAPI, network, localCompany.id, true);
+
+                    userOptions.json = {
+                        "username": creds.username,
+                        "password": creds.password,
+                        "isActive": true,
+                        "isAdmin": false,
+                        "sessionTTL": 0,
+                        "organizations": [
+                            {
+                                "isAdmin": true,
+                                "organizationID": networkCoId
+                            }
+                        ],
+                        "email": "fake@emailaddress.com",
+                        "note": "Created by and for LPWAN Server"
+                    };
+                    userOptions.agentOptions = {
+                        "secureProtocol": "TLSv1_2_method",
+                        "rejectUnauthorized": false
+                    };
+
+
+                    request(userOptions, async function (error, response, body) {
+                        if (error || response.statusCode >= 400) {
+                            if (error) {
+                                dataAPI.addLog(network, "Error creating " + localCompany.name +
+                                    "'s admin user " + userOptions.json.username +
+                                    ": " + error);
+                                reject(error);
+                                return;
+                            }
+                            else {
+
+                                dataAPI.addLog(network, "Error creating " + localCompany.name +
+                                    "'s admin user " + userOptions.json.username +
+                                    ": " + response.statusCode +
+                                    " (Server message: " + response.body.error + ")");
+                                reject(response.statusCode);
+                                return;
+                            }
+                        }
+                        else {
+                            // Save the user ID from the remote network.
+                            await dataAPI.putProtocolDataForKey(network.id,
+                                network.networkProtocolId,
+                                makeCompanyDataKey(localCompany.id, "coUsrId"),
+                                body.id);
+                            resolve();
+                        }
+
+                    }); // End of user create request.
+                })
         }
         catch (err) {
             dataAPI.addLog(network, "Failed to add ancillary data to remote host: " + err);
