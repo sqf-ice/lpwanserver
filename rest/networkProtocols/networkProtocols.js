@@ -36,7 +36,7 @@ NetworkProtocolAccess.prototype.getProtocol = function( network ) {
         var id = network.id;
         if ( ! networkProtocolMap[ id ] ) {
             try {
-                appLogger.log(JSON.stringify(network));
+                appLogger.log(JSON.stringify(JSON.stringify(me.npAPI)));
                 // We'll need the protocol for the network.
                 // var np = await me.npAPI.networkProtocols.retrieveNetworkProtocol( network.networkProtocolId );
                 var np = await me.npAPI.networkProtocols.prototype.retrieveNetworkProtocols(  );
