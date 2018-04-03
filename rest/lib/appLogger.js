@@ -31,8 +31,12 @@ exports.log = function( msg ) {
                          file + ":" +
                          line + ": ";
         }
-
-        console.log( headers +
-                      msg );
+        if (typeof msg == Object) {
+            console.log( headers + JSON.stringify(msg));
+        }
+        else {
+            console.log( headers +
+                msg );
+        }
     }
 }
