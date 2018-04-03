@@ -3,6 +3,8 @@ var nconf = require('nconf');
 
 // General libraries in use in this module.
 var appLogger = require( '../lib/appLogger.js' );
+var NetworkProtocolDataAccess = require( '../networkProtocols/networkProtocolDataAccess.js' );
+
 
 //******************************************************************************
 // The Company interface.
@@ -100,9 +102,11 @@ Company.prototype.pullCompanies = function( network ) {
     let me = this;
     return new Promise( async function(resolve, reject) {
         try {
-            let remoteCompanies = await modelAPI.networkTypeAPI.pullCompanies( network.id );
-            // var proto = await modelAPI.networkProtocolAPI.pullCompanies( network );
-            // let remoteCompanies = await proto.api.pullCompanies( modelAPI, network );
+            // let remoteCompanies = await modelAPI.networkTypeAPI.pullCompanies( network.id );
+            var network = await modelAPI.networks.retrieveNetwork( networkId );
+            var proto = await modelAPI.networkProtocolAPI.getProtocol( network );
+            var dataAPI =  new NetworkProtocolDataAccess( modelAPI, "Pull Companies" );
+            var remoteCompanies = await proto.api.pullCompanies( dataAPI, network);
             appLogger.log(JSON.stringify(remoteCompanies));
             if (!remoteCompanies || remoteCompanies.length == 0) {
                 resolve();

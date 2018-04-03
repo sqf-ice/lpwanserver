@@ -863,6 +863,7 @@ exports.pushCompany = function (sessionData, network, companyId, dataAPI) {
 //
 // Returns a Promise that gets the company record from the remote system.
 exports.pullCompanies = function (sessionData, network, dataAPI) {
+    appLogger.log('LoRa Server Pulling Companies');
     return new Promise(async function (resolve, reject) {
         // Get the remote companies.
         // Set up the request options.
