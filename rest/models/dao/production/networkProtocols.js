@@ -46,6 +46,7 @@ exports.createNetworkProtocol = function( name, networkTypeId, protocolHandler )
 //
 // Returns a promise that executes the retrieval.
 exports.retrieveNetworkProtocol = function( id ) {
+    console.log('Looking for Protocol ' + id);
     return new Promise( function ( resolve, reject ) {
         db.fetchRecord("networkProtocols", "id", id, function ( err, rec ) {
             if ( err ) {
