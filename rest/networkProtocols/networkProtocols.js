@@ -244,6 +244,8 @@ NetworkProtocolAccess.prototype.pushCompany = function( dataAPI, network, compan
 NetworkProtocolAccess.prototype.pullCompanies = function( dataAPI, network ) {
     var me = this;
     return new Promise( async function( resolve, reject ) {
+        appLogger.log('Inside NP');
+
         // Get the protocol for the network.
         var netProto = await me.getProtocol( network );
 

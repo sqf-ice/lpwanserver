@@ -885,7 +885,7 @@ exports.pullCompanies = function (sessionData, network, dataAPI) {
                 reject(error);
             }
             else {
-                // dataAPI.addLog(network, body);
+                dataAPI.addLog(network, body);
                 resolve(body);
             }
         });
