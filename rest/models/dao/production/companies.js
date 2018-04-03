@@ -52,6 +52,7 @@ exports.createCompany = function( name, type ) {
 //
 // Returns the promise that will execute the create.
 exports.remoteCreateCompany = function( name, type ) {
+    let me = this;
     return new Promise(function (resolve, reject) {
         // Create the user record.
         var company = {};
@@ -59,7 +60,7 @@ exports.remoteCreateCompany = function( name, type ) {
         company.type = type;
 
         //check if it exists first
-        this.retrieveCompanybyName(name)
+        me.retrieveCompanybyName(name)
             .then((existingCompany) => {
                 resolve(existingCompany);
             })
