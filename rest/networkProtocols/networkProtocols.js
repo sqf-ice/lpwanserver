@@ -49,7 +49,7 @@ NetworkProtocolAccess.prototype.getProtocol = function( network ) {
                 resolve( networkProtocolMap[ id ] );
             }
             catch ( err ) {
-                console.log( "Failed to load network protocol code " + np.protocolHandler );
+                console.log( "Failed to load network protocol code " );
                 reject( err );
             }
         }
