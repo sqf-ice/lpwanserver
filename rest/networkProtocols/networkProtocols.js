@@ -12,6 +12,7 @@ var networkProtocolMap;
 
 // Constructor - gets the database API for the networkProtocols
 function NetworkProtocolAccess( networkProtocolAPI ) {
+    console.log('Setting npAPI to ' + JSON.stringify(networkProtocolAPI));
     this.npAPI = networkProtocolAPI;
     clearProtocolMap();
 }
