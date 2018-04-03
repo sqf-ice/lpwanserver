@@ -297,7 +297,7 @@ Network.prototype.pullNetwork = function( networkId  ) {
             //
             // }
 
-            resolve( logs );
+            resolve(  );
         }
         catch ( err ) {
             appLogger.log( "Error pulling from Network : " + networkId + " " + err );

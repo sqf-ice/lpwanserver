@@ -107,16 +107,20 @@ Company.prototype.pullCompanies = function( network ) {
             // var proto = await modelAPI.networkProtocolAPI.getProtocol( network );
             // var dataAPI =  new NetworkProtocolDataAccess( modelAPI, "Pull Companies" );
             // var remoteCompanies = await proto.api.pullCompanies( dataAPI, network);
+            remoteCompanies = JSON.parse(remoteCompanies[Object.keys(remoteCompanies)[0]].logs);
+
             appLogger.log(JSON.stringify(remoteCompanies));
-            if (!remoteCompanies || remoteCompanies.length == 0) {
+            if (!remoteCompanies || remoteCompanies.totalCount == 0) {
                 resolve();
             }
             else {
-                // for (let index in remoteCompanies) {
-                //     let newCompany = me.impl.remoteCreate(remoteCompanies[index].name, this.impl.COMPANY_VENDOR);
-                //     let newCompanyNetworkTypeLink = me.modelAPI.companyNetworkTypeLinks.remoteCreateCompanyNetworkType(newCompany.id, networkId, {region: ''});
-                //     me.modelAPI.networkTypeAPI.addProtocolData(networkId, remoteCompanies[index], newCompany);
-                // }
+                remoteCompanies = remoteCompanies.result;
+                for (let index in remoteCompanies) {
+                    appLogger.log(remoteCompanies[index]);
+                    // let newCompany = me.impl.remoteCreate(remoteCompanies[index].name, this.impl.COMPANY_VENDOR);
+                    // let newCompanyNetworkTypeLink = me.modelAPI.companyNetworkTypeLinks.remoteCreateCompanyNetworkType(newCompany.id, networkId, {region: ''});
+                    // me.modelAPI.networkTypeAPI.addProtocolData(networkId, remoteCompanies[index], newCompany);
+                }
                 resolve();
             }
         }
