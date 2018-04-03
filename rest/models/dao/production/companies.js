@@ -43,6 +43,42 @@ exports.createCompany = function( name, type ) {
     });
 }
 
+// Create the company record from a remote source
+//
+// name  - the name of the company
+// type  - the company type. COMPANY_ADMIN can manage companies, etc.,
+//         COMPANY_VENDOR is the typical vendor who just manages their own apps
+//         and devices.
+//
+// Returns the promise that will execute the create.
+exports.remoteCreateCompany = function( name, type ) {
+    return new Promise(function (resolve, reject) {
+        // Create the user record.
+        var company = {};
+        company.name = name;
+        company.type = type;
+
+        //check if it exists first
+        this.retrieveCompanybyName(name)
+            .then((existingCompany) => {
+                resolve(existingCompany);
+            })
+            .catch(() => {
+                // OK, save it!
+                db.insertRecord("companies", company, function (err, record) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(record);
+                    }
+                });
+            })
+
+
+    });
+}
+
 // Retrieve a company record by id.  This method retrieves not just the company
 // fields, but also returns an array of the networkTypeIds the company has
 // companyNetworkTypeLinks to.
