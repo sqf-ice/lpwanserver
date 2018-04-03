@@ -51,6 +51,29 @@ CompanyNetworkTypeLink.prototype.createCompanyNetworkTypeLink = function( compan
     });
 }
 
+// Create the companyNetworkTypeLinks record for a remote Company (from pull).
+//
+// companyId       - The id for the company this link is being created for
+// networkTypeId       - The id for the network the company is linked to
+// networkSettings - The settings required by the network protocol in json
+//                   format
+//
+// Returns the promise that will execute the create.
+CompanyNetworkTypeLink.prototype.remoteCreateCompanyNetworkTypeLink = function( companyId, networkTypeId, networkSettings ) {
+    var me = this;
+    return new Promise( async function( resolve, reject ) {
+        try {
+            var rec = await me.impl.createCompanyNetworkTypeLink( companyId, networkTypeId, networkSettings );
+            // var logs = await modelAPI.networkTypeAPI.addCompany( networkTypeId, companyId, networkSettings );
+            resolve( rec );
+        }
+        catch ( err ) {
+            appLogger.log( "Error remote creating companyNetworkTypeLink: " + err );
+            reject( err );
+        }
+    });
+}
+
 // Retrieve a companyNetworkTypeLinks record by id.
 //
 // id - the record id of the companyNetworkTypeLinks record.
