@@ -2487,7 +2487,7 @@ exports.addProtocolDataForCompany = function (sessionData, network, remoteOrgani
                 })
                 .catch(() => {
                     // Save the company ID from the remote network.
-                    await dataAPI.putProtocolDataForKey(network.id,
+                    dataAPI.putProtocolDataForKey(network.id,
                         network.networkProtocolId,
                         makeCompanyDataKey(localCompany.id, "coNwkId"),
                         remoteOrganization.id);
@@ -2503,7 +2503,7 @@ exports.addProtocolDataForCompany = function (sessionData, network, remoteOrgani
                     };
 
                     // Get/generate the company username/password
-                    var creds = await getCompanyAccount(dataAPI, network, localCompany.id, true);
+                    var creds = getCompanyAccount(dataAPI, network, localCompany.id, true);
 
                     userOptions.json = {
                         "username": creds.username,
