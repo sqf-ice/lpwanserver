@@ -241,7 +241,7 @@ NetworkProtocolAccess.prototype.pushCompany = function( dataAPI, network, compan
 // Returns a Promise that ostensibly connects to the remote system and updates
 // or creates the remote company.  This may or may not do as promised (haha) -
 // the implementation is completely up to the developers of the protocols.
-NetworkProtocolAccess.prototype.pullCompanies = function( dataAPI, network ) {
+NetworkProtocolAccess.prototype.pullNetwork = function( dataAPI, network ) {
     var me = this;
     return new Promise( async function( resolve, reject ) {
         appLogger.log('Inside NP');
