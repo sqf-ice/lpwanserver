@@ -46,6 +46,7 @@ NetworkProtocolAccess.prototype.getProtocol = function( network ) {
                 networkProtocolMap[ id ] = {};
                 networkProtocolMap[ id ][ 'sessionData' ] = {};
                 networkProtocolMap[ id ][ 'api' ] = new require( './' + np.protocolHandler );
+                appLogger.log(networkProtocolMap);
                 resolve( networkProtocolMap[ id ] );
             }
             catch ( err ) {
