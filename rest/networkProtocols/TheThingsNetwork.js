@@ -204,7 +204,40 @@ module.exports.connect = function (network, loginData) {
   appLogger.log('Inside TTN connect')
   return new Promise(function (resolve, reject) {
     let options = {}
-    if (loginData.code) {
+    if (loginData.refresh_token) {
+      options.method = 'POST'
+      options.url = network.baseUrl + '/users/token'
+      let auth = Buffer.from(loginData.clientId + ':' + loginData.clientSecret).toString('base64')
+      options.headers = { 'Content-Type': 'application/json', 'Authorization': 'Basic ' + auth }
+      options.json = {
+        grant_type: 'refresh_token',
+        refresh_token: loginData.refresh_token,
+        redirect_url: 'http://localhost:3000/admin/networks/oauth',
+        scope: ['apps']
+      }
+      console.log(options)
+      request(options, function (error, response, body) {
+        if (error) {
+          appLogger.log('Error on signin: ' + error)
+          reject(error)
+        }
+        else if (response.statusCode >= 400) {
+          appLogger.log('Error on signin: ' + response.statusCode + ', ' + response.body.error)
+          reject(response.statusCode)
+        }
+        else {
+          var token = body.access_token
+          body.username = 'TTNUser'
+          if (token) {
+            resolve(body)
+          }
+          else {
+            reject(new Error('No token'))
+          }
+        }
+      })
+    }
+    else if (loginData.code) {
       options.method = 'POST'
       options.url = network.baseUrl + '/users/token'
       let auth = Buffer.from(loginData.clientId + ':' + loginData.clientSecret).toString('base64')
@@ -226,38 +259,6 @@ module.exports.connect = function (network, loginData) {
         }
         else {
           appLogger.log(body)
-          var token = body.access_token
-          body.username = 'TTNUser'
-          if (token) {
-            resolve(body)
-          }
-          else {
-            reject(new Error('No token'))
-          }
-        }
-      })
-    }
-    else if (loginData.refresh_token) {
-      options.method = 'POST'
-      options.url = network.baseUrl + '/users/token'
-      let auth = Buffer.from(loginData.clientId + ':' + loginData.clientSecret).toString('base64')
-      options.headers = { 'Content-Type': 'application/json', 'Authorization': 'Basic ' + auth }
-      options.json = {
-        grant_type: 'refresh_token',
-        refresh_token: loginData.refresh_token,
-        redirect_url: 'http://localhost:3000/admin/networks/oauth'
-      }
-      console.log(options)
-      request(options, function (error, response, body) {
-        if (error) {
-          appLogger.log('Error on signin: ' + error)
-          reject(error)
-        }
-        else if (response.statusCode >= 400) {
-          appLogger.log('Error on signin: ' + response.statusCode + ', ' + response.body.error)
-          reject(response.statusCode)
-        }
-        else {
           var token = body.access_token
           body.username = 'TTNUser'
           if (token) {
@@ -434,9 +435,11 @@ module.exports.pullApplications = function (sessionData, network, companyMap, dp
 module.exports.addApplication = function (sessionData, network, applicationId, dataAPI) {
   return new Promise(async function (resolve, reject) {
     let application
+    let applicationNTL
     try {
       // Get the local application data.
       application = await dataAPI.getApplicationById(applicationId)
+      applicationNTL = await dataAPI.getApplicationNetworkType(applicationId, network.networkTypeId)
     }
     catch (err) {
       dataAPI.addLog(network, 'Failed to get required data for addApplication: ' + err)
@@ -446,19 +449,39 @@ module.exports.addApplication = function (sessionData, network, applicationId, d
     // Set up the request options.
     let options = {}
     options.method = 'POST'
-    options.url = network.baseUrl + '/applications'
+    options.url = network.baseUrl + '/api/v2' + '/applications'
     options.headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + sessionData.connection.access_token
     }
     options.json = {
-      'name': application.name
+      id: 'lpwanserver' + application.id,
+      name: application.name,
+      created: new Date(),
+      rights: [
+        'settings',
+        'devices',
+        'messages:up:r',
+        'messages:down:w'
+      ],
+      'access_keys': [
+        {
+          'name': 'stupid',
+          'rights': [
+            'settings',
+            'devices',
+            'messages:up:r',
+            'messages:down:w'
+          ]
+        }
+      ]
     }
     options.agentOptions = {
       'secureProtocol': 'TLSv1_2_method',
       'rejectUnauthorized': false
     }
 
+    appLogger.log(options)
     request(options, async function (error, response, body) {
       if (error || response.statusCode >= 400) {
         if (error) {
@@ -473,10 +496,26 @@ module.exports.addApplication = function (sessionData, network, applicationId, d
       else {
         try {
           // Save the application ID from the remote network.
+          console.log(body)
+          let key = await getAppToken(body.id, sessionData, network, applicationId, dataAPI)
+          let accessKeyBody = await registerKey(key, body.id, sessionData, network, applicationId, dataAPI)
           await dataAPI.putProtocolDataForKey(network.id,
             network.networkProtocolId,
             makeApplicationDataKey(application.id, 'appNwkId'),
             body.id)
+          let kd = await dataAPI.genKey()
+          let srd = dataAPI.hide(network, accessKeyBody, kd)
+          await dataAPI.putProtocolDataForKey(
+            network.id,
+            network.networkProtocolId,
+            makeCompanyDataKey(applicationId, 'sd'),
+            srd)
+
+          await dataAPI.putProtocolDataForKey(
+            network.id,
+            network.networkProtocolId,
+            makeCompanyDataKey(applicationId, 'kd'),
+            kd)
         }
         catch (err) {
           reject(err)
@@ -506,7 +545,7 @@ module.exports.getApplication = function (sessionData, network, applicationId, d
     // Set up the request options.
     let options = {}
     options.method = 'GET'
-    options.url = network.baseUrl + '/applications/' + appNetworkId
+    options.url = network.baseUrl + '/api/v2/applications/' + appNetworkId
     options.headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + sessionData.connection.access_token
@@ -569,91 +608,69 @@ module.exports.getApplications = function (sessionData, network, dataAPI) {
  */
 module.exports.updateApplication = function (sessionData, network, applicationId, dataAPI) {
   return new Promise(async function (resolve, reject) {
-    // Get the application data.
-    let application = await dataAPI.getApplicationById(applicationId)
-    let coNetworkId = await dataAPI.getProtocolDataForKey(
-      network.id,
-      network.networkProtocolId,
-      makeCompanyDataKey(application.companyId, 'coNwkId'))
-    let appNetworkId = await dataAPI.getProtocolDataForKey(
-      network.id,
-      network.networkProtocolId,
-      makeApplicationDataKey(applicationId, 'appNwkId'))
-    let applicationData = await dataAPI.getApplicationNetworkType(applicationId, network.networkTypeId)
-
+    let application
+    let applicationNTL
+    try {
+      // Get the local application data.
+      application = await dataAPI.getApplicationById(applicationId)
+      applicationNTL = await dataAPI.getApplicationNetworkType(applicationId, network.networkTypeId)
+      secData = await getApplicationKey(applicationId, network)
+    }
+    catch (err) {
+      dataAPI.addLog(network, 'Failed to get required data for addApplication: ' + err)
+      reject(err)
+      return
+    }
     // Set up the request options.
     let options = {}
     options.method = 'PUT'
-    options.url = network.baseUrl + '/applications/' + appNetworkId
+    options.url = network.baseUrl + '/api/v2' + '/applications' + '/lpwanserver' + application.id
     options.headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + sessionData.connection.access_token
+      'Authorization': 'Key ' + secData.key
     }
     options.json = {
-      'id': appNetworkId,
-      'name': application.name,
-      'organizationID': coNetworkId,
-      'description': 'This Application is Managed by LPWanServer',
-      'payloadCodec': '',
-      'payloadDecoderScript': '',
-      'payloadEncoderScript': ''
+      id: 'lpwanserver' + application.id,
+      name: application.name,
+      created: new Date(),
+      rights: [
+        'settings',
+        'devices',
+        'messages:up:r',
+        'messages:down:w'
+      ]
     }
     options.agentOptions = {
       'secureProtocol': 'TLSv1_2_method',
       'rejectUnauthorized': false
     }
 
-    // Optional data
-    if (applicationData && applicationData.networkSettings) {
-      if (applicationData.networkSettings.isABP) {
-        options.json.isABP = applicationData.networkSettings.isABP
-      }
-      if (applicationData.networkSettings.isClassC) {
-        options.json.isClassC = applicationData.networkSettings.isClassC
-      }
-      if (applicationData.networkSettings.relaxFCnt) {
-        options.json.relaxFCnt = applicationData.networkSettings.relaxFCnt
-      }
-      if (applicationData.networkSettings.rXDelay) {
-        options.json.rXDelay = applicationData.networkSettings.rXDelay
-      }
-      if (applicationData.networkSettings.rX1DROffset) {
-        options.json.rX1DROffset = applicationData.networkSettings.rX1DROffset
-      }
-      if (applicationData.networkSettings.rXWindow) {
-        options.json.rXWindow = applicationData.networkSettings.rXWindow
-      }
-      if (applicationData.networkSettings.rX2DR) {
-        options.json.rX2DR = applicationData.networkSettings.rX2DR
-      }
-      if (applicationData.networkSettings.aDRInterval) {
-        options.json.aDRInterval = applicationData.networkSettings.aDRInterval
-      }
-      if (applicationData.networkSettings.installationMargin) {
-        options.json.installationMargin = applicationData.networkSettings.installationMargin
-      }
-      if (applicationData.networkSettings.payloadCodec && applicationData.networkSettings.payloadCodec !== 'NONE') {
-        options.json.payloadCodec = applicationData.networkSettings.payloadCodec
-      }
-      if (applicationData.networkSettings.payloadDecoderScript) {
-        options.json.payloadDecoderScript = applicationData.networkSettings.payloadDecoderScript
-      }
-      if (applicationData.networkSettings.payloadEncoderScript) {
-        options.json.payloadEncoderScript = applicationData.networkSettings.payloadEncoderScript
-      }
-    }
-    appLogger.log(application)
-    appLogger.log(applicationData)
     appLogger.log(options)
-
-    request(options, function (error, response, body) {
-      if (error) {
-        dataAPI.addLog(network, 'Error on update application: ' + error)
-        reject(error)
+    request(options, async function (error, response, body) {
+      if (error || response.statusCode >= 400) {
+        if (error) {
+          dataAPI.addLog(network, 'Error on create application: ' + error)
+          reject(error)
+        }
+        else {
+          dataAPI.addLog(network, 'Error on create application: ' + JSON.stringify(body) + '(' + response.statusCode + ')')
+          reject(response.statusCode)
+        }
       }
       else {
-        appLogger.log(body)
-        resolve()
+        try {
+          // Save the application ID from the remote network.
+          console.log(body)
+          await registerKey(body.id, sessionData, network, applicationId, dataAPI)
+          await dataAPI.putProtocolDataForKey(network.id,
+            network.networkProtocolId,
+            makeApplicationDataKey(application.id, 'appNwkId'),
+            body.id)
+        }
+        catch (err) {
+          reject(err)
+        }
+        resolve(body.id)
       }
     })
   })
@@ -1445,11 +1462,9 @@ module.exports.pushDevice = function (sessionData, network, deviceId, dataAPI) {
  * @returns {Error}
  */
 module.exports.addCompany = function (sessionData, network, companyId, dataAPI) {
-  appLogger.log('The Things Network: addCompany')
-  appLogger.log('Companies are not supported by The Things Network')
-  let error = new Error('Companies are not supported by The Things Network')
-  dataAPI.addLog(network, 'Error on Add Companies: ' + error)
-  return (error)
+
+  // Nothing to do
+
 }
 
 /**
@@ -1674,6 +1689,31 @@ module.exports.pushDeviceProfile = function (sessionData, network, deviceProfile
 /**
  * Private Utilities
  */
+
+function getApplicationKey (applicationId, network) {
+  return new Promise(async function (resolve, reject) {
+    let srd
+    let kd
+    let secData
+    try {
+      srd = await dataAPI.getProtocolDataForKey(
+        network.id,
+        network.networkProtocolId,
+        makeApplicationDataKey(applicationId, 'sd'))
+
+      kd = await dataAPI.getProtocolDataForKey(
+        network.id,
+        network.networkProtocolId,
+        makeApplicationDataKey(applicationId, 'kd'))
+      secData = await dataAPI.access(network, srd, kd)
+      resolve(secData)
+    }
+    catch (err) {
+      appLogger.log(err)
+      reject(err)
+    }
+  })
+}
 
 /**
  * @desc Fetch the authentication key to the LPWan The Things Network account.
@@ -1945,5 +1985,105 @@ function addRemoteDevice (sessionData, limitedRemoteDevice, network, companyId, 
         remoteDevice.devEUI)
     }
     resolve(existingDevice.id)
+  })
+}
+
+/**
+ * Converts admin access token  to a application level access token
+ *
+ * @param ttnAppId
+ * @param sessionData
+ * @param network
+ * @param applicationId
+ * @param dataAPI
+ * @returns {Promise<any>}
+ */
+function getAppToken (ttnAppId, sessionData, network, applicationId, dataAPI) {
+  return new Promise(async function (resolve, reject) {
+    let options = {}
+    options.method = 'POST'
+    options.url = network.baseUrl + '/users/restrict-token'
+    options.headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + sessionData.connection.access_token
+    }
+    options.json = {
+      scope: ['apps:' + ttnAppId]
+    }
+    options.agentOptions = {
+      'secureProtocol': 'TLSv1_2_method',
+      'rejectUnauthorized': false
+    }
+
+    appLogger.log(options)
+    request(options, async function (error, response, body) {
+      if (error) {
+        reject(error)
+      }
+      else {
+        appLogger.log(body)
+        resolve(body.access_token)
+      }
+    })
+  })
+}
+
+/**
+ * Creates a useful access_key for a new application on TTN
+ *
+ * @param key  access_token with appId scope
+ * @param ttnAppId remote app Id
+ * @param sessionData
+ * @param network
+ * @param applicationId
+ * @param dataAPI
+ * @returns {Promise<any>}
+ */
+function registerKey (key, ttnAppId, sessionData, network, applicationId, dataAPI) {
+  return new Promise(async function (resolve, reject) {
+    let options = {}
+    options.method = 'POST'
+    options.url = network.baseUrl + '/api/v2' + '/applications/' + ttnAppId + '/access-keys'
+    options.headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + key
+    }
+    options.json = {
+      rights: [
+        'settings',
+        'devices',
+        'messages:up:r',
+        'messages:down:w'
+      ],
+      name: 'defaultLPWan'
+    }
+    options.agentOptions = {
+      'secureProtocol': 'TLSv1_2_method',
+      'rejectUnauthorized': false
+    }
+
+    appLogger.log(options)
+    request(options, async function (error, response, body) {
+      if (error || response.statusCode >= 400) {
+        if (error) {
+          dataAPI.addLog(network, 'Error on adding Keys: ' + error)
+          reject(error)
+        }
+        else {
+          appLogger.log('Error on adding Keys: ' + JSON.stringify(body) + '(' + response.statusCode + ')')
+          dataAPI.addLog(network, 'Error on adding Keys: ' + JSON.stringify(body) + '(' + response.statusCode + ')')
+          reject(response.statusCode)
+        }
+      }
+      else {
+        try {
+          console.log(body)
+          resolve(body)
+        }
+        catch (err) {
+          reject(err)
+        }
+      }
+    })
   })
 }

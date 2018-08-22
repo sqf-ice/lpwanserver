@@ -196,7 +196,7 @@ NetworkProtocolAccess.prototype.sessionWrapper = function (network, loginData, p
       resolve(id)
     } catch (err) {
       // Failed, but why?
-      if (err === 401) {
+      if (err === 401 || err === 400) {
         try {
           appLogger.log('Session expired(?), reconnecting...')
           await me.connect(network, loginData)
