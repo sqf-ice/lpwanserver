@@ -84,7 +84,7 @@ describe('NetworkProtocols', function () {
         .post('/api/networkProtocols')
         .set('Authorization', 'Bearer ' + coAdminToken)
         .set('Content-Type', 'application/json')
-        .send({'name': 'LoRa Open Source', 'networkTypeId': 1, 'protocolHandler': 'LoRaOpenSource.js'})
+        .send({'name': 'LoRa Open Source', 'networkTypeId': 1, 'protocolHandler': 'LoRaServer.js'})
         .end(function (err, res) {
           res.should.have.status(403)
           done()

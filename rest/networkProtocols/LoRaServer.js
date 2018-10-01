@@ -6,8 +6,8 @@ var appLogger = require('../lib/appLogger.js')
 // var appLogger = appLogger.logger
 
 /**
- * The Lora Open Source Protocol Handler Module
- * @module networkProtocols/LoraOpenSource
+ * The LoRa Server Protocol Handler Module
+ * @module networkProtocols/LoRaServer
  * @see module:networkProtocols/networkProtocols
  * @type {{activeApplicationNetworkProtocols: {}}}
  */
@@ -16,47 +16,47 @@ module.exports = {}
 module.exports.activeApplicationNetworkProtocols = {}
 module.exports.metaData =
   {
-    protocolHandlerName: 'Lora Open Source',
+    protocolHandlerName: 'LoRa Server v1.0',
     version:
       {
         versionText: 'Version 1.0',
         versionValue: '1.0'
       },
-    networkType: 'Lora',
+    networkType: 'LoRa',
     oauthUrl: '',
     protocolHandlerNetworkFields: [
       {
         name: 'username',
-        description: 'The username of the LoraOS admin account',
+        description: 'The username of the LoRa Server  admin account',
         help: '',
         type: 'string',
         label: 'Username',
         value: '',
         required: true,
-        placeholder: 'myLoraUsername',
+        placeholder: 'myLoRaServerUsername',
         oauthQueryParameter: ''
       },
       {
         name: 'password',
-        description: 'The password of the LoraOS admin account',
+        description: 'The password of the LoRa Server  admin account',
         help: '',
         type: 'password',
         label: 'Password',
         value: '',
         required: true,
-        placeholder: 'myLoraPassword',
+        placeholder: 'myLoRaServerPassword',
         oauthQueryParameter: ''
       }
     ]
   }
 
 module.exports.register = async function (networkProtocols) {
-  appLogger.log('LoraOpenSource:register')
+  appLogger.log('LoRaServer:register')
   return new Promise(async function (resolve, reject) {
     let me = {
-      name: 'Lora Open Source',
+      name: 'LoRa Server',
       networkTypeId: 1,
-      protocolHandler: 'LoRaOpenSource.js',
+      protocolHandler: 'LoRaServer.js',
       networkProtocolVersion: '1.0'
     }
     await networkProtocols.upsertNetworkProtocol(me)
@@ -119,7 +119,7 @@ module.exports.test = function (network, loginData) {
 }
 
 //* *****************************************************************************
-// Maps the standard remote network API to the LoRaOpenSource server.
+// Maps the standard remote network API to the LoRaServer server.
 // This is a cross-platform API that must remain consistent.
 //* *****************************************************************************
 
@@ -250,7 +250,7 @@ async function getCompanyAccount (dataAPI, network, companyId, generateIfMissing
     else {
       appLogger.log(JSON.stringify(err))
       appLogger.log(
-        'LoraOS: Company security data is missing for company id ' +
+        'LoRa Server : Company security data is missing for company id ' +
         companyId)
       return null
     }
@@ -293,7 +293,7 @@ function makeDeviceProfileDataKey (deviceProfileId, dataName) {
 // esoteric concept for general application management, so we provide this
 // method that will get a network server id from the LoRa system.
 function getANetworkServerID (network, connection) {
-  appLogger.log('LoRaOpenSource: getANetworkServerID')
+  appLogger.log('LoRaServer: getANetworkServerID')
   return new Promise(async function (resolve, reject) {
     // Set up the request options.
     var options = {}
@@ -342,7 +342,7 @@ function getANetworkServerID (network, connection) {
 
 // Get the NetworkServer using the Service Profile a ServiceProfile.
 function getNetworkServerById (network, networkServerId, connection, dataAPI) {
-  appLogger.log('LoRaOpenSource: getNetworkServerForRemoteOrganization')
+  appLogger.log('LoRaServer: getNetworkServerForRemoteOrganization')
   return new Promise(async function (resolve, reject) {
     // Set up the request options.
     var options = {}
@@ -383,7 +383,7 @@ function getNetworkServerById (network, networkServerId, connection, dataAPI) {
 };
 
 function getDeviceProfileById (network, dpId, connection, dataAPI) {
-  appLogger.log('LoRaOpenSource: getDeviceProfileById')
+  appLogger.log('LoRaServer: getDeviceProfileById')
   return new Promise(async function (resolve, reject) {
     // Set up the request options.
     var options = {}
@@ -425,7 +425,7 @@ function getDeviceProfileById (network, dpId, connection, dataAPI) {
 };
 
 function getRemoteDeviceById (network, deviceId, connection) {
-  appLogger.log('LoRaOpenSource: getDeviceProfileById')
+  appLogger.log('LoRaServer: getDeviceProfileById')
   return new Promise(async function (resolve, reject) {
     // Set up the request options.
     let options = {}
@@ -465,7 +465,7 @@ function getRemoteDeviceById (network, deviceId, connection) {
 };
 
 function getRemoteDeviceKey (network, device, connection) {
-  appLogger.log('LoRaOpenSource: getRemoteDeviceKey', 'info')
+  appLogger.log('LoRaServer: getRemoteDeviceKey', 'info')
   return new Promise(async function (resolve, reject) {
     let options = {}
     options.method = 'GET'
@@ -508,7 +508,7 @@ function getRemoteDeviceKey (network, device, connection) {
 };
 
 function getRemoteDeviceActivation (network, device, connection) {
-  appLogger.log('LoRaOpenSource: getRemoteDeviceActivation', 'info')
+  appLogger.log('LoRaServer: getRemoteDeviceActivation', 'info')
   return new Promise(async function (resolve, reject) {
     let options = {}
     options.method = 'GET'
@@ -554,7 +554,7 @@ function getRemoteDeviceActivation (network, device, connection) {
 
 // Get the NetworkServer using the Service Profile a ServiceProfile.
 function getServiceProfileById (network, serviceProfileId, connection, dataAPI) {
-  appLogger.log('LoRaOpenSource: getServiceProfileById')
+  appLogger.log('LoRaServer: getServiceProfileById')
   return new Promise(async function (resolve, reject) {
     // Set up the request options.
     var options = {}
@@ -595,7 +595,7 @@ function getServiceProfileById (network, serviceProfileId, connection, dataAPI) 
 
 // Get the NetworkServer using the Service Profile a ServiceProfile.
 function getApplicationById (network, applicationId, connection) {
-  appLogger.log('LoRaOpenSource: getApplicationById')
+  appLogger.log('LoRaServer: getApplicationById')
   return new Promise(async function (resolve, reject) {
     // Set up the request options.
     var options = {}
@@ -638,7 +638,7 @@ function getApplicationById (network, applicationId, connection) {
 
 // Get the Service Profile a for a Remote Org.
 function getServiceProfileForOrg (network, orgId, companyId, connection, dataAPI) {
-  appLogger.log('LoRaOpenSource: getNetworkServerForRemoteOrganization')
+  appLogger.log('LoRaServer: getNetworkServerForRemoteOrganization')
   return new Promise(async function (resolve, reject) {
     var spOptions = {}
     spOptions.method = 'GET'
@@ -728,7 +728,7 @@ function getANetworkServerIDFromServiceProfile (network, connection, coId, dataA
       reject(err)
     }
 
-    /* The loraserver is failing to load the serviceprofile, and passes that back
+    /* The loRaserver is failing to load the serviceprofile, and passes that back
    to us as a 500 error, causing all kinds of mayhem.  The hack above bypasses
    this problem.
         // Set up the request options.
@@ -1458,7 +1458,7 @@ module.exports.pushDevice = function (sessionData, network, device, dataAPI) {
 }
 
 /**
- * Pull remote resources on Lora 1.0 Server
+ * Pull remote resources on LoRa 1.0 Server
  *
  * @param sessionData
  * @param network
@@ -1515,7 +1515,7 @@ module.exports.setupOrganization = function (sessionData, network, modelAPI, dat
   return new Promise(async function (resolve, reject) {
     let company = await modelAPI.companies.retrieveCompany(2)
     let companyNtl = await dataAPI.getCompanyNetworkType(company.id, network.networkTypeId)
-    let lora1NetworkSettings = {network: network.id}
+    let loRa1NetworkSettings = {network: network.id}
     if (!companyNtl) {
       companyNtl = await modelAPI.companyNetworkTypeLinks.createRemoteCompanyNetworkTypeLink(company.id, network.networkTypeId, {})
       companyNtl.networkSettings = JSON.parse(companyNtl.networkSettings)
@@ -1548,8 +1548,8 @@ module.exports.setupOrganization = function (sessionData, network, modelAPI, dat
           me.addCompany(sessionData, network, company.id, dataAPI)
             .then((networkSettings) => {
               appLogger.log(networkSettings)
-              lora1NetworkSettings.serviceProfileId = networkSettings.serviceProfileID
-              lora1NetworkSettings.networkServerId = networkSettings.networkServerID
+              loRa1NetworkSettings.serviceProfileId = networkSettings.serviceProfileID
+              loRa1NetworkSettings.networkServerId = networkSettings.networkServerID
               appLogger.log(companyNtl)
               resolve(companyNtl)
             })
@@ -1572,19 +1572,19 @@ module.exports.setupOrganization = function (sessionData, network, modelAPI, dat
               getNetworkServerById(network, networkSettings.networkServerID, sessionData.connection, dataAPI)
                 .then(networkServer => {
                   appLogger.log(networkServer, 'warn')
-                  lora1NetworkSettings.serviceProfileId = networkSettings.serviceProfileID
-                  lora1NetworkSettings.networkServerId = networkSettings.networkServerID
-                  lora1NetworkSettings.organizationId = organization.id
-                  lora1NetworkSettings.networkId = network.id
+                  loRa1NetworkSettings.serviceProfileId = networkSettings.serviceProfileID
+                  loRa1NetworkSettings.networkServerId = networkSettings.networkServerID
+                  loRa1NetworkSettings.organizationId = organization.id
+                  loRa1NetworkSettings.networkId = network.id
 
                   companyNtl.networkSettings.serviceProfile = {region: networkServer.region}
-                  companyNtl.networkSettings[network.name] = lora1NetworkSettings
+                  companyNtl.networkSettings[network.name] = loRa1NetworkSettings
 
                   appLogger.log(companyNtl, 'warn')
                   modelAPI.companyNetworkTypeLinks.updateRemoteCompanyNetworkTypeLink(companyNtl)
                     .then((result) => {
                       appLogger.log(result)
-                      resolve(lora1NetworkSettings)
+                      resolve(loRa1NetworkSettings)
                     })
                     .catch(err => {
                       appLogger.log(err)
@@ -1607,7 +1607,7 @@ module.exports.setupOrganization = function (sessionData, network, modelAPI, dat
 }
 
 /**
- * Pull remote resources on Lora 1.0 Server
+ * Pull remote resources on LoRa 1.0 Server
  *
  * @param sessionData
  * @param network
@@ -1721,7 +1721,7 @@ module.exports.addRemoteDeviceProfile = function (sessionData, limitedRemoteDevi
 }
 
 /**
- * Pull remote applications on Lora 1.0 Server
+ * Pull remote applications on LoRa 1.0 Server
  * @param sessionData
  * @param network
  * @param companyMap
@@ -1805,7 +1805,7 @@ function addRemoteApplication (sessionData, limitedRemoteApplication, network, m
 }
 
 /**
- * Pull remote devices on Lora 1.0 Server
+ * Pull remote devices on LoRa 1.0 Server
  * @param sessionData
  * @param network
  * @param companyId
@@ -1904,7 +1904,7 @@ function addRemoteDevice (sessionData, limitedRemoteDevice, network, application
 }
 
 /**
- * Set integrations on Lora 1.0 Server to LPWan and update baseUrl for LPWan
+ * Set integrations on LoRa 1.0 Server to LPWan and update baseUrl for LPWan
  * @param sessionData
  * @param network
  * @param remoteApplicationId
@@ -2835,7 +2835,7 @@ module.exports.deleteDeviceProfile = function (sessionData, network, deviceProfi
 // device.  The promise returns the id of the created device to be added to the
 // deviceNetworkTypeLinks record by the caller.
 module.exports.addDevice = function (sessionData, network, deviceId, dataAPI) {
-  appLogger.log('Adding Device ' + deviceId + ' to Lora V1 Network')
+  appLogger.log('Adding Device ' + deviceId + ' to LoRa V1 Network')
   return new Promise(async function (resolve, reject) {
     var device
     var dntl
@@ -2860,7 +2860,7 @@ module.exports.addDevice = function (sessionData, network, deviceId, dataAPI) {
         network.networkProtocolId,
         makeDeviceProfileDataKey(dntl.deviceProfileId, 'dpNwkId'))
 
-      let loraV1Device = deNormalizeDeviceData(dntl.networkSettings)
+      let loRaV1Device = deNormalizeDeviceData(dntl.networkSettings)
       // Set up the request options.
       var options = {}
       options.method = 'POST'
@@ -2871,11 +2871,11 @@ module.exports.addDevice = function (sessionData, network, deviceId, dataAPI) {
       }
       options.json = {
         'applicationID': appNwkId,
-        'description': loraV1Device.description,
-        'devEUI': loraV1Device.devEUI,
+        'description': loRaV1Device.description,
+        'devEUI': loRaV1Device.devEUI,
         'deviceProfileID': dpNwkId,
-        'name': loraV1Device.name,
-        'skipFCntCheck': loraV1Device.skipFCntCheck
+        'name': loRaV1Device.name,
+        'skipFCntCheck': loRaV1Device.skipFCntCheck
       }
       options.agentOptions = {
         'secureProtocol': 'TLSv1_2_method',
@@ -2901,28 +2901,28 @@ module.exports.addDevice = function (sessionData, network, deviceId, dataAPI) {
             makeDeviceDataKey(device.id, 'devNwkId'),
             options.json.devEUI)
 
-          appLogger.log(loraV1Device, 'info')
+          appLogger.log(loRaV1Device, 'info')
 
           // Devices have to do a second call to set up either the
           // Application Key (OTAA) or the Keys for ABP.
-          if (deviceProfile.networkSettings.supportsJoin && loraV1Device.deviceKeys) {
+          if (deviceProfile.networkSettings.supportsJoin && loRaV1Device.deviceKeys) {
             // This is the OTAA path.
             options.url = network.baseUrl + '/devices/' +
-              loraV1Device.devEUI + '/keys'
+              loRaV1Device.devEUI + '/keys'
             options.json = {
-              devEUI: loraV1Device.devEUI,
-              deviceKeys: loraV1Device.deviceKeys
+              devEUI: loRaV1Device.devEUI,
+              deviceKeys: loRaV1Device.deviceKeys
             }
           }
-          else if (loraV1Device.deviceActivation) {
+          else if (loRaV1Device.deviceActivation) {
             // This is the ABP path.
             options.url = network.baseUrl + '/devices/' +
-              loraV1Device.devEUI + '/activate'
-            options.json = loraV1Device.deviceActivation
+              loRaV1Device.devEUI + '/activate'
+            options.json = loRaV1Device.deviceActivation
             appLogger.log('options.json = ' + JSON.stringify(options.json))
           }
           else {
-            appLogger.log('Remote Device ' + loraV1Device.name + ' does not have authentication parameters')
+            appLogger.log('Remote Device ' + loRaV1Device.name + ' does not have authentication parameters')
             resolve(dntl.networkSettings.devEUI)
             return
           }
@@ -3233,7 +3233,7 @@ function normalizeApplicationData (remoteApplication) {
 }
 
 function deNormalizeApplicationData (remoteApplication, serviceProfile, organizationId) {
-  let loraV1ApplicationData = {
+  let loRaV1ApplicationData = {
     'description': remoteApplication.description,
     'id': remoteApplication.id,
     'name': remoteApplication.name,
@@ -3244,8 +3244,8 @@ function deNormalizeApplicationData (remoteApplication, serviceProfile, organiza
     'serviceProfileID': serviceProfile
   }
   appLogger.log(remoteApplication, 'info')
-  appLogger.log(loraV1ApplicationData, 'info')
-  return loraV1ApplicationData
+  appLogger.log(loRaV1ApplicationData, 'info')
+  return loRaV1ApplicationData
 }
 
 function normalizeDeviceProfileData (remoteDeviceProfile) {
@@ -3309,7 +3309,7 @@ function normalizeDeviceProfileData (remoteDeviceProfile) {
 }
 
 function deNormalizeDeviceProfileData (remoteDeviceProfile, networkServerId, organizationId) {
-  let loraV1DeviceProfileData = {
+  let loRaV1DeviceProfileData = {
     deviceProfile: {
       classBTimeout: remoteDeviceProfile.classBTimeout,
       classCTimeout: remoteDeviceProfile.classCTimeout,
@@ -3336,7 +3336,7 @@ function deNormalizeDeviceProfileData (remoteDeviceProfile, networkServerId, org
     networkServerID: networkServerId,
     organizationID: organizationId
   }
-  return loraV1DeviceProfileData
+  return loRaV1DeviceProfileData
 }
 
 function normalizeDeviceData (remoteDevice) {
@@ -3406,7 +3406,7 @@ function deNormalizeDeviceData (remoteDevice) {
       "name": "string",
       "skipFCntCheck": true
    */
-  let loraV1DeviceData = {
+  let loRaV1DeviceData = {
     applicationID: remoteDevice.applicationID,
     description: remoteDevice.description,
     devEUI: remoteDevice.devEUI,
@@ -3418,12 +3418,12 @@ function deNormalizeDeviceData (remoteDevice) {
     lastSeenAt: remoteDevice.lastSeenAt
   }
   if (remoteDevice.deviceKeys) {
-    loraV1DeviceData.deviceKeys = {
+    loRaV1DeviceData.deviceKeys = {
       appKey: remoteDevice.deviceKeys.appKey
     }
   }
   if (remoteDevice.deviceActivation) {
-    loraV1DeviceData.deviceActivation = {
+    loRaV1DeviceData.deviceActivation = {
       appSKey: remoteDevice.deviceActivation.appSKey,
       devAddr: remoteDevice.deviceActivation.devAddr,
       devEUI: remoteDevice.deviceActivation.devEUI,
@@ -3433,5 +3433,5 @@ function deNormalizeDeviceData (remoteDevice) {
       skipFCntCheck: false
     }
   }
-  return loraV1DeviceData
+  return loRaV1DeviceData
 }

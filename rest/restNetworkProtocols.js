@@ -186,7 +186,7 @@ exports.initialize = function (app, server) {
      * @apiExample {json} Example body:
      *      {
      *          "name": "LoRa Open Source",
-     *          "protocolHandler": "LoRaOpenSource.js"
+     *          "protocolHandler": "LoRaServer.js"
      *          "networkTypeId": 1
      *      }
      * @apiSuccess {Number} id The new Network Protocol's id.
@@ -246,7 +246,7 @@ exports.initialize = function (app, server) {
      * @apiExample {json} Example body:
      *      {
      *          "name": "LoRa Open Source",
-     *          "protocolHandler": "LoRaOpenSource.js",
+     *          "protocolHandler": "LoRaServer.js",
      *          "networkTypeId": 1
      *      }
      * @apiVersion 0.1.0

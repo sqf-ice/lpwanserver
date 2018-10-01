@@ -257,6 +257,7 @@ function authorizeWithPassword (network, loginData, scope) {
       }
       else {
         appLogger.log(body, 'debug')
+        body.scope = scope
         resolve(body)
       }
     })
@@ -964,7 +965,15 @@ module.exports.addApplication = function (session, network, applicationId, dataA
             makeApplicationDataKey(application.id, 'appNwkId'),
             body.id)
 
-          scope = ['apps', 'gateways', 'components', 'apps:' + body.id]
+          let scope = []
+          appLogger.log(session.connection, 'warn')
+          if (!session.connection.scope) {
+            scope = ['apps', 'gateways', 'components', 'apps:' + body.id]
+          }
+          else {
+            scope.push(body.id)
+          }
+          appLogger.log(scope, 'warn')
           session.connection = await authorizeWithPassword(network, network.securityData, scope)
           me.registerApplicationWithHandler(session.connection.access_token, network, ttnApplication.ttnApplicationData, body, dataAPI)
             .then(id => {
@@ -2207,12 +2216,12 @@ function normalizeDeviceData (remoteDevice, deviceProfileId) {
     deviceStatusMargin: '',
     lastSeenAt: remoteDevice.lorawan_device.last_seen
   }
-  //TTN only supports 1.0.x currently, so  nwkKey == appKey for conversion
+
   if (remoteDevice.lorawan_device.activation_constraints === 'otaa' || (remoteDevice.lorawan_device.app_key !== '')) {
     normalized.deviceKeys = {
       appKey: remoteDevice.lorawan_device.app_key,
       devEUI: remoteDevice.lorawan_device.dev_eui,
-      nwkKey: remoteDevice.lorawan_device.app_key
+      nwkKey: remoteDevice.lorawan_device.nwk_s_key
     }
   }
   else {
@@ -2263,6 +2272,7 @@ function deNormalizeDeviceData (localDevice, localDeviceProfile, application, re
   if (localDeviceProfile.supportsJoin) {
     ttnDeviceData.lorawan_device.activation_constraints = 'otta',
     ttnDeviceData.lorawan_device.app_key = localDevice.deviceKeys.appKey
+    ttnDeviceData.lorawan_device.nwk_s_key = localDevice.deviceKeys.nwkKey
   }
   else {
     ttnDeviceData.lorawan_device.activation_constraints = 'abp'

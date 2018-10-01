@@ -7,7 +7,7 @@ which enables the networkProtocol code to access the local data, save logging
 (since the networkProtocols are all called asynchronously), and more.
 
 To extend to a new networkProtocol, copy the file protocoltemplate.js to a new
-file named for the protocol, and implement the methods there.  LoRaOpenSource.js
+file named for the protocol, and implement the methods there.  LoRaServer.js
 may be a good example to follow.
 
 A note about devices vs. deviceProfiles:  DeviceProfiles are intended to
