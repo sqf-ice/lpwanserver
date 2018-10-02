@@ -20,7 +20,9 @@
     "dev": "NODE_ENV=local nodemon --watch rest ./bin/rest",
     "e2e-docker": "export NODE_ENV=e2e; ./bin/e2e",
     "package": "node bin/package.js",
-    "e2e-ttn": "cp data/test.sqlite3.testSuiteStartingDB test/e2e/lpwanserver.sqlite3;export NODE_ENV=e2e; mocha test/e2e/ttn-v2-single --exit --bail --timeout 10000"
+    "e2e-ttn": "cp data/test.sqlite3.testSuiteStartingDB test/e2e/lpwanserver.sqlite3;export NODE_ENV=e2e; mocha test/e2e/ttn-v2-single --exit --bail --timeout 10000",
+    "mongo": "export NODE_ENV=mongo;npm start"
+
   },
   "dependencies": {
     "async": "~2.0.1",
@@ -42,6 +44,7 @@
     "jsonwebtoken": "^8.2.1",
     "mkdirp": "~0.5.1",
     "mocha": "^5.2.0",
+    "mongodb": "^3.1.6",
     "morgan": "^1.9.0",
     "nconf": "^0.8.5",
     "nodemailer": "^4.6.4",

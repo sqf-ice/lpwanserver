@@ -36,59 +36,67 @@ function RestServer (app) {
   // Once a data model is initialized, set up the rest API path using the
   // local rest*API.initialize() method.
   restServer = this
+  return new Promise(async function (resolve, reject) {
+    try {
+      // Set up the model for the application.
+      this.modelAPI = await new ModelAPI(app)
 
-  // Set up the model for the application.
-  this.modelAPI = new ModelAPI(app)
+      // Companies.
+      restCompaniesAPI.initialize(app, this)
 
-  // Companies.
-  restCompaniesAPI.initialize(app, this)
+      // Password policies.  Manages password rules for companies.
+      restPasswordPoliciesAPI.initialize(app, this)
 
-  // Password policies.  Manages password rules for companies.
-  restPasswordPoliciesAPI.initialize(app, this)
+      // Users.  And start the user email verification background task that
+      // expires old email verification records.
+      restUsersAPI.initialize(app, this)
 
-  // Users.  And start the user email verification background task that
-  // expires old email verification records.
-  restUsersAPI.initialize(app, this)
+      // The session model, which uses users (for login).
+      restSessionsAPI.initialize(app, this)
 
-  // The session model, which uses users (for login).
-  restSessionsAPI.initialize(app, this)
+      // The networkProtocol model.
+      restNetworkProtocolsAPI.initialize(app, this)
 
-  // The networkProtocol model.
-  restNetworkProtocolsAPI.initialize(app, this)
+      // The network model.  Needs the protocols to access the correct api.
+      restNetworksAPI.initialize(app, this)
 
-  // The network model.  Needs the protocols to access the correct api.
-  restNetworksAPI.initialize(app, this)
+      // The network provider model.
+      restNetworkProvidersAPI.initialize(app, this)
 
-  // The network provider model.
-  restNetworkProvidersAPI.initialize(app, this)
+      // The network type model.
+      restNetworkTypesAPI.initialize(app, this)
 
-  // The network type model.
-  restNetworkTypesAPI.initialize(app, this)
+      // The companyNetworkTypeLink model.
+      restCompanyNetworkTypeLinksAPI.initialize(app, this)
 
-  // The companyNetworkTypeLink model.
-  restCompanyNetworkTypeLinksAPI.initialize(app, this)
+      // The NetworkProvisioningFields model.
+      // restNetworkProvisioningFieldsAPI.initialize( app, this );
 
-  // The NetworkProvisioningFields model.
-  // restNetworkProvisioningFieldsAPI.initialize( app, this );
+      // The reportingProtocol model.
+      restReportingProtocolsAPI.initialize(app, this)
 
-  // The reportingProtocol model.
-  restReportingProtocolsAPI.initialize(app, this)
+      // The applicationNetworkTypeLink model.
+      restApplicationNetworkTypeLinksAPI.initialize(app, this)
 
-  // The applicationNetworkTypeLink model.
-  restApplicationNetworkTypeLinksAPI.initialize(app, this)
+      // The application model.  Needs the express app because when it starts, it
+      // may need to add new endpoints to receive data from remote networks.
+      restApplicationsAPI.initialize(app, this)
 
-  // The application model.  Needs the express app because when it starts, it
-  // may need to add new endpoints to receive data from remote networks.
-  restApplicationsAPI.initialize(app, this)
+      // The device model.  It uses applications for some validation.
+      restDeviceProfilesAPI.initialize(app, this)
 
-  // The device model.  It uses applications for some validation.
-  restDeviceProfilesAPI.initialize(app, this)
+      // The device model.  It uses applications for some validation.
+      restDevicesAPI.initialize(app, this)
 
-  // The device model.  It uses applications for some validation.
-  restDevicesAPI.initialize(app, this)
-
-  // The applicationNetworkTypeLink model.
-  restDeviceNetworkTypeLinksAPI.initialize(app, this)
+      // The applicationNetworkTypeLink model.
+      restDeviceNetworkTypeLinksAPI.initialize(app, this)
+    }
+    catch (err) {
+      appLogger.log(err.stack, 'error')
+      appLogger.log('Could not connect to the database', 'error')
+      process.exit(-1)
+    }
+  })
 }
 
 // *******************************************************************

@@ -5,7 +5,7 @@ var appLogger = require( "../../../lib/appLogger.js" );
 var nconf = require('nconf');
 
 // Database implementation.
-var db = require("../../../lib/dbsqlite.js");
+var db = require("../../../lib/dbmongo");
 
 // Password hashing
 var crypto = require('../../../lib/crypto.js');
@@ -785,31 +785,31 @@ exports.handleEmailVerifyResponse = function( uuid, type, source ) {
 // the handler code above with a "reject" type and an "expired" source so
 // the handling and reporting code is in one place.
 var expireEmailVerify = function( ) {
-    appLogger.log( "Running expiration of email verify records" );
-    // 14 day limit on email changes.
-    var timedOut = new Date();
-    // Move now back 14 days.
-    timedOut.setDate( timedOut.getDate() - 14 );
-    var query = "SELECT * FROM emailVerify WHERE changeRequested < '" +
-                timedOut.toISOString() + "';";
-    db.select( query, function( err, rows ) {
-        if ( err ) {
-            appLogger.log( "Error getting expired emailVerify records: " + err );
-        }
-        else {
-            appLogger.log( rows.length + " email verify records to be expired" );
-            // Expire the records
-            for ( var i = 0; i < rows.length; ++i ) {
-                var row = rows[ i ];
-                exports.handleEmailVerifyResponse(
-                                    row.uuid,
-                                    "reject",
-                                    "expired verification request",
-                                    function( pugFile, pugData ) {
-                    // Ignore the returned data - that's for UI.  The reporting
-                    // happened in the handleEmailVerifyResponse() call.
-                });
-            } // End of for each expired record.
-        } // End of have expired records (else)
-    }); // End of get expired records callback.
+    // appLogger.log( "Running expiration of email verify records" );
+    // // 14 day limit on email changes.
+    // var timedOut = new Date();
+    // // Move now back 14 days.
+    // timedOut.setDate( timedOut.getDate() - 14 );
+    // var query = "SELECT * FROM emailVerify WHERE changeRequested < '" +
+    //             timedOut.toISOString() + "';";
+    // db.select( query, 'emailVerify', function( err, rows ) {
+    //     if ( err ) {
+    //         appLogger.log( "Error getting expired emailVerify records: " + err );
+    //     }
+    //     else {
+    //         appLogger.log( rows.length + " email verify records to be expired" );
+    //         // Expire the records
+    //         for ( var i = 0; i < rows.length; ++i ) {
+    //             var row = rows[ i ];
+    //             exports.handleEmailVerifyResponse(
+    //                                 row.uuid,
+    //                                 "reject",
+    //                                 "expired verification request",
+    //                                 function( pugFile, pugData ) {
+    //                 // Ignore the returned data - that's for UI.  The reporting
+    //                 // happened in the handleEmailVerifyResponse() call.
+    //             });
+    //         } // End of for each expired record.
+    //     } // End of have expired records (else)
+    // }); // End of get expired records callback.
 }

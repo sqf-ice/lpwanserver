@@ -247,7 +247,7 @@ exports.deleteInterval = function(table, tkey, endValue, callback) {
     .catch((e) => callback(e, null));   //at least one query failed
 };
 
-exports.selectOne = function(sql, callback) {
+exports.selectOne = function(sql, username, callback) {
     db.all(sql, function(err, rows) {
         var row;
         if (rows && rows.length > 0) {
@@ -256,7 +256,7 @@ exports.selectOne = function(sql, callback) {
         callback(err, row);
     });
 }
-exports.select = function(sql, callback) {
+exports.select = function(sql, table, options, callback) {
     db.all(sql, function(err, rows) {
         callback(err, rows);
     });

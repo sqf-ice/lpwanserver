@@ -1,43 +1,44 @@
 // Database implementation.
-var db = require( "../../../lib/dbsqlite.js" );
+var db = require( "../../../lib/dbmongo" );
 
-// Logging
-var appLogger = require( "../../../lib/appLogger.js" );
+// Device access
+var dev = require( "./devices.js" );
 
-// Application access
-var app = require( "./applications.js" );
+// Application/company validation from applicationNetowrkLinks
+var app = require( "./applicationNetworkTypeLinks.js" );
 
 // Error reporting
 var httpError = require( 'http-errors' );
 
 //******************************************************************************
-// ApplicationNetworkTypeLinks database table.
+// DeviceNetworkTypeLinks database table.
 //******************************************************************************
 
 //******************************************************************************
 // CRUD support.
 //******************************************************************************
 
-// Create the applicationNetworkTypeLinks record.
+// Create the deviceNetworkTypeLinks record.
 //
-// applicationId     - The id for the application this link is being created for
-// networkTypeId     - The id for the network the application is linked to
+// deviceId          - The id for the device this link is being created for
+// networkTypeId         - The id for the network the device is linked to
 // networkSettings   - The settings required by the network protocol in json
 //                     format
-// validateCompanyId - If supplied, the application MUST belong to this company.
+// validateCompanyId - If supplied, the device MUST belong to this company.
 //
 // Returns the promise that will execute the create.
-exports.createApplicationNetworkTypeLink = function( applicationId, networkTypeId, networkSettings, validateCompanyId ) {
+exports.createDeviceNetworkTypeLink = function( deviceId, networkTypeId, deviceProfileId, networkSettings, validateCompanyId ) {
     return new Promise( function( resolve, reject ) {
-        exports.validateCompanyForApplication( validateCompanyId, applicationId ).then( function() {
-            // Create the user record.
-            var anl = {};
-            anl.applicationId = applicationId;
-            anl.networkTypeId = networkTypeId;
-            anl.networkSettings = JSON.stringify( networkSettings );
+        validateCompanyForDevice( validateCompanyId, deviceId ).then( function() {
+            // Create the link record.
+            var link = {};
+            link.deviceId = deviceId;
+            link.networkTypeId = networkTypeId;
+            link.deviceProfileId = deviceProfileId;
+            link.networkSettings = JSON.stringify( networkSettings );
 
             // OK, save it!
-            db.insertRecord("applicationNetworkTypeLinks", anl, function( err, record ) {
+            db.insertRecord("deviceNetworkTypeLinks", link, function( err, record ) {
                 if ( err ) {
                     reject( err );
                 }
@@ -52,14 +53,14 @@ exports.createApplicationNetworkTypeLink = function( applicationId, networkTypeI
     });
 }
 
-// Retrieve a applicationNetworkTypeLinks record by id.
+// Retrieve a deviceNetworkTypeLinks record by id.
 //
-// id - the record id of the applicationNetworkTypeLinks record.
+// id - the record id of the deviceNetworkTypeLinks record.
 //
 // Returns a promise that executes the retrieval.
-exports.retrieveApplicationNetworkTypeLink = function( id ) {
+exports.retrieveDeviceNetworkTypeLink = function( id ) {
     return new Promise( function ( resolve, reject ) {
-        db.fetchRecord("applicationNetworkTypeLinks", "id", id, function ( err, rec ) {
+        db.fetchRecord("deviceNetworkTypeLinks", "id", id, function ( err, rec ) {
             if ( err ) {
                 reject( err );
             }
@@ -67,30 +68,31 @@ exports.retrieveApplicationNetworkTypeLink = function( id ) {
                 reject( new httpError.NotFound );
             }
             else {
-                // Stored in the database as a string, make it an object.
-                rec.networkSettings = JSON.parse( rec.networkSettings );
+                if ( rec.networkSettings ) {
+                    rec.networkSettings = JSON.parse( rec.networkSettings );
+                }
                 resolve( rec );
             }
         });
     });
 }
 
-// Update the applicationNetworkTypeLinks record.
+// Update the deviceNetworkTypeLinks record.
 //
-// applicationNetworkTypeLinks - the updated record. Note that the id must be
+// deviceNetworkTypeLinks      - the updated record. Note that the id must be
 //                           unchanged from retrieval to guarantee the same
 //                           record is updated.
-// validateCompanyId       - If supplied, the application MUST belong to this
+// validateCompanyId       - If supplied, the device MUST belong to this
 //                           company.
 //
 // Returns a promise that executes the update.
-exports.updateApplicationNetworkTypeLink = function( applicationNetworkTypeLink, validateCompanyId ) {
-    return new Promise( async function( resolve, reject ) {
-        exports.validateCompanyForApplicationNetworkTypeLink( validateCompanyId, applicationNetworkTypeLink.id ).then( function() {
-            if ( applicationNetworkTypeLink.networkSettings ) {
-                applicationNetworkTypeLink.networkSettings = JSON.stringify( applicationNetworkTypeLink.networkSettings );
+exports.updateDeviceNetworkTypeLink = function( dnl, validateCompanyId ) {
+    return new Promise( function( resolve, reject ) {
+        validateCompanyForDeviceNetworkTypeLink( validateCompanyId, dnl.id ).then( function() {
+            if ( dnl.networkSettings ) {
+                dnl.networkSettings = JSON.stringify( dnl.networkSettings );
             }
-            db.updateRecord("applicationNetworkTypeLinks", "id", applicationNetworkTypeLink, function( err, row ) {
+            db.updateRecord("deviceNetworkTypeLinks", "id", dnl, function( err, row ) {
                 if ( err ) {
                     reject( err );
                 }
@@ -100,22 +102,21 @@ exports.updateApplicationNetworkTypeLink = function( applicationNetworkTypeLink,
             });
         })
         .catch( function( err ) {
-            appLogger.log( "Error validating company " + validateCompanyId + " for " + "applicationNetworkLink " + applicationNetworkTypeLink.id + "." );
             reject( err );
         });
     });
 }
 
-// Delete the applicationNetworkTypeLinks record.
+// Delete the deviceNetworkTypeLinks record.
 //
-// id                - the id of the applicationNetworkTypeLinks record to delete.
-// validateCompanyId - If supplied, the application MUST belong to this company.
+// id                - the id of the deviceNetworkTypeLinks record to delete.
+// validateCompanyId - If supplied, the device MUST belong to this company.
 //
 // Returns a promise that performs the delete.
-exports.deleteApplicationNetworkTypeLink = function( id, validateCompanyId ) {
+exports.deleteDeviceNetworkTypeLink = function( id, validateCompanyId ) {
     return new Promise( function ( resolve, reject ) {
-        exports.validateCompanyForApplicationNetworkTypeLink( validateCompanyId, id ).then( function() {
-            db.deleteRecord("applicationNetworkTypeLinks", "id", id, function( err, rec ) {
+        validateCompanyForDeviceNetworkTypeLink( validateCompanyId, id ).then( function() {
+            db.deleteRecord("deviceNetworkTypeLinks", "id", id, function( err, rec ) {
                 if ( err ) {
                     reject( err );
                 }
@@ -134,27 +135,27 @@ exports.deleteApplicationNetworkTypeLink = function( id, validateCompanyId ) {
 // Custom retrieval functions.
 //******************************************************************************
 
-// Retrieves a subset of the applicationNetworkTypeLinks in the system given the options.
+// Retrieves a subset of the deviceNetworkTypeLinks in the system given the options.
 //
-// Options include the applicationId, and the networkTypeId.
+// Options include the deviceId, and the networkTypeId.
 //
 // Returns a promise that does the retrieval.
-exports.retrieveApplicationNetworkTypeLinks = function( options ) {
+exports.retrieveDeviceNetworkTypeLinks = function( options ) {
     return new Promise( function( resolve, reject ) {
-        var sql = "select anl.* from applicationNetworkTypeLinks anl";
-        var sqlTotalCount = "select count( anl.id ) as count from applicationNetworkTypeLinks anl";
+        var sql = "select dnl.* from deviceNetworkTypeLinks dnl";
+        var sqlTotalCount = "select count(dnl.id) as count from deviceNetworkTypeLinks dnl";
         if ( options ) {
             if ( options.companyId ) {
-                sql += ", applications a"
-                sqlTotalCount += ", applications a"
+                sql += ", devices d, applications a"
+                sqlTotalCount += ", devices d, applications a"
             }
-            if ( options.companyId || options.applicationId || options.networkTypeId ) {
+            if ( options.companyId || options.deviceId || options.networkTypeId ) {
                 var needsAnd = false;
                 sql += " where";
                 sqlTotalCount += " where";
-                if ( options.applicationId ) {
-                    sql += " anl.applicationId = " + db.sqlValue( options.applicationId );
-                    sqlTotalCount += " anl.applicationId = " + db.sqlValue( options.applicationId );
+                if ( options.deviceId ) {
+                    sql += " dnl.deviceId = " + db.sqlValue( options.deviceId );
+                    sqlTotalCount += " dnl.deviceId = " + db.sqlValue( options.deviceId );
                     needsAnd = true;
                 }
                 if ( options.networkTypeId ) {
@@ -162,8 +163,17 @@ exports.retrieveApplicationNetworkTypeLinks = function( options ) {
                         sql += " and";
                         sqlTotalCount += " and";
                     }
-                    sql += " anl.networkTypeId = " + db.sqlValue( options.networkTypeId );
-                    sqlTotalCount += " anl.networkTypeId = " + db.sqlValue( options.networkTypeId );
+                    sql += " dnl.networkTypeId = " + db.sqlValue( options.networkTypeId );
+                    sqlTotalCount += " dnl.networkTypeId = " + db.sqlValue( options.networkTypeId );
+                    needsAnd = true;
+                }
+                if ( options.applicationId ) {
+                    if ( needsAnd ) {
+                        sql += " and";
+                        sqlTotalCount += " and";
+                    }
+                    sql += " dnl.deviceId = d.id and d.applicationId = " + db.sqlValue( options.applicationId );
+                    sqlTotalCount += " dnl.deviceId = d.id and d.applicationId = " + db.sqlValue( options.applicationId );
                     needsAnd = true;
                 }
                 if ( options.companyId ) {
@@ -171,8 +181,8 @@ exports.retrieveApplicationNetworkTypeLinks = function( options ) {
                         sql += " and";
                         sqlTotalCount += " and";
                     }
-                    sql += " anl.applicationId = a.id and a.companyId = " + db.sqlValue( options.companyId );
-                    sqlTotalCount += " anl.applicationId = a.id and a.companyId = " + db.sqlValue( options.companyId );
+                    sql += " dnl.deviceId = d.id and d.applicationId = a.id and a.companyId = " + db.sqlValue( options.companyId );
+                    sqlTotalCount += " dnl.deviceId = d.id and d.applicationId = a.id and a.companyId = " + db.sqlValue( options.companyId );
                 }
             }
             if ( options.limit ) {
@@ -182,16 +192,16 @@ exports.retrieveApplicationNetworkTypeLinks = function( options ) {
                 sql += " offset " + db.sqlValue( options.offset );
             }
         }
-
-        db.select(sql, table, options, function( err, rows ) {
+        db.select(sql, function( err, rows ) {
             if ( err ) {
                 reject( err );
             }
             else {
                 rows.forEach( function( row ) {
-                    // Stored in the database as a string, make it an object.
-                    row.networkSettings = JSON.parse( row.networkSettings );
-                })
+                    if ( row.networkSettings ) {
+                        row.networkSettings = JSON.parse( row.networkSettings );
+                    }
+                });
                 // Limit and/or offset requires a second search to get a
                 // total count.  Well, usually.  Can also skip if the returned
                 // count is less than the limit (add in the offset to the
@@ -239,7 +249,7 @@ exports.retrieveApplicationNetworkTypeLinks = function( options ) {
 /***************************************************************************
  * Validation methods
  ***************************************************************************/
-exports.validateCompanyForApplication = function( companyId, applicationId ) {
+function validateCompanyForDevice( companyId, deviceId ) {
     return new Promise( function( resolve, reject ) {
         // undefined companyId is always valid - means the caller is a used for
         // an admin company, so they can set up any links.
@@ -247,13 +257,13 @@ exports.validateCompanyForApplication = function( companyId, applicationId ) {
             resolve();
         }
         else {
-            app.retrieveApplication( applicationId ).then( function( a ) {
-                if ( a.companyId != companyId ) {
-                    reject( new httpError.Unauthorized );
-                }
-                else {
-                    resolve();
-                }
+            dev.retrieveDevice( deviceId )
+            .then( function( d ) {
+                app.validateCompanyForApplication( companyId, d.applicationId )
+                .then( resolve() )
+                .catch( function( err ) {
+                    reject( err );
+                });
             })
             .catch( function( err ) {
                 reject( err );
@@ -262,26 +272,24 @@ exports.validateCompanyForApplication = function( companyId, applicationId ) {
     });
 }
 
-exports.validateCompanyForApplicationNetworkTypeLink = function( companyId, antlId ) {
-    return new Promise( async function( resolve, reject ) {
+function validateCompanyForDeviceNetworkTypeLink( companyId, dnlId ) {
+    return new Promise( function( resolve, reject ) {
         // undefined companyId is always valid - means the caller is a used for
-        // an admin company, so they can set up any links.  Yes, this is
-        // redundant with the application validator, but it saves the database
-        // hit.
+        // an admin company, so they can set up any links.
         if ( !companyId ) {
             resolve();
         }
         else {
-            try {
-                // Get the record we're validating.
-                var antl = await exports.retrieveApplicationNetworkTypeLink( antlId );
-                // Validate he record's applicationm against the company.
-                await exports.validateCompanyForApplication( companyId, antl.applicationId );
-                resolve();
-            }
-            catch( err ) {
+            exports.retrieveDeviceNetworkTypeLink( dnlId ) .then( function( dnl ) {
+                validateCompanyForDevice( dnl.deviceId )
+                .then( resolve() )
+                .catch( function( err ) {
+                    reject( err );
+                });
+            })
+            .catch( function( err ) {
                 reject( err );
-            };
+            });
         }
     });
 }

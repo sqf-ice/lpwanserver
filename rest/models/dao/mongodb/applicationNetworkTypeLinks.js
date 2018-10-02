@@ -1,5 +1,5 @@
 // Database implementation.
-var db = require( "../../../lib/dbsqlite.js" );
+var db = require( "../../../lib/dbmongo" );
 
 // Logging
 var appLogger = require( "../../../lib/appLogger.js" );
