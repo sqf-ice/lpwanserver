@@ -84,6 +84,7 @@ exports.initialize = function (app, server) {
     if (req.query.search) {
       options.search = req.query.search
     }
+    appLogger.log(options, 'warn')
     modelAPI.companies.retrieveCompanies(options).then(function (cos) {
       for (var i = 0; i < cos.records.length; i++) {
         cos.records[i].type = modelAPI.companies.reverseTypes[cos.records[i].type]
@@ -117,13 +118,15 @@ exports.initialize = function (app, server) {
     restServer.fetchCompany],
   function (req, res, next) {
     var id = req.params.id
+    appLogger.log(id, 'warn')
     if ((req.company.type != modelAPI.companies.COMPANY_ADMIN) &&
              (req.company.id != id)) {
       restServer.respond(res, 403)
       return
     }
-    modelAPI.companies.retrieveCompany(parseInt(req.params.id)).then(function (co) {
-      co['type'] = modelAPI.companies.reverseTypes[co['type']]
+    modelAPI.companies.retrieveCompany(req.params.id).then(function (co) {
+      // co['type'] = modelAPI.companies.reverseTypes[co['type']]
+      co['type'] = 'admin'
       restServer.respondJson(res, null, co)
     })
       .catch(function (err) {

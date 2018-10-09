@@ -150,6 +150,23 @@ app.use(cors(corsOptions))
 // Initialize the application support interfaces.  We pass in the
 // application so we can add functions and API endpoints.
 
-var restServer = new server.RestServer(app)
+
+
+// Setup the DB
+var restServer = null
+const Initializer = require('./rest/models/initializer')
+var initializer = new Initializer()
+initializer.init()
+  .then(() => {
+    appLogger.log('DB connected', 'warn')
+    restServer = new server.RestServer(app)
+  })
+  .catch(err => {
+    appLogger.log('ERROR: Connecting to the DB ' + nconf.get('impl_directory'), 'error')
+    appLogger.log(err, 'error')
+    process.exit(-1)
+  })
+
+
 
 module.exports = app

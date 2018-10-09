@@ -1,16 +1,20 @@
 // Database implementation.
-var db = require( "../../../lib/dbmongo" );
+var db = require('../../../lib/dbmongo')
 
 // Error reporting
-var httpError = require( 'http-errors' );
+var httpError = require('http-errors')
+var appLogger = require('../../../lib/appLogger.js')
 
-//******************************************************************************
+
+const table = 'networkProvisioningFields'
+
+//* *****************************************************************************
 // NetworkProvisioningFields database table.
-//******************************************************************************
+//* *****************************************************************************
 
-//******************************************************************************
+//* *****************************************************************************
 // CRUD support.
-//******************************************************************************
+//* *****************************************************************************
 
 // Create the networkProvisioningFields record.
 //
@@ -26,29 +30,29 @@ var httpError = require( 'http-errors' );
 //                       companies, applications, devices)
 //
 // Returns the promise that will execute the create.
-exports.createNetworkProvisioningField = function( networkProtocolId, fieldOrder, fieldName, fieldLabel, fieldType, fieldSize, requiredField, provisioningTableId ) {
-    return new Promise( function( resolve, reject ) {
-        // Create the user record.
-        var npf = {};
-        npf.networkProtocolId = networkProtocolId;
-        npf.fieldOrder = fieldOrder;
-        npf.fieldName = fieldName;
-        npf.fieldLabel = fieldLabel;
-        npf.fieldType = fieldType;
-        npf.fieldSize = fieldSize;
-        npf.requiredField = requiredField;
-        npf.provisioningTableId = provisioningTableId;
+exports.createNetworkProvisioningField = function (networkProtocolId, fieldOrder, fieldName, fieldLabel, fieldType, fieldSize, requiredField, provisioningTableId) {
+  return new Promise(function (resolve, reject) {
+    // Create the user record.
+    var npf = {}
+    npf.networkProtocolId = networkProtocolId
+    npf.fieldOrder = fieldOrder
+    npf.fieldName = fieldName
+    npf.fieldLabel = fieldLabel
+    npf.fieldType = fieldType
+    npf.fieldSize = fieldSize
+    npf.requiredField = requiredField
+    npf.provisioningTableId = provisioningTableId
 
-        // OK, save it!
-        db.insertRecord("networkProvisioningFields", npf, function( err, record ) {
-            if ( err ) {
-                reject( err );
-            }
-            else {
-                resolve( record );
-            }
-        });
-    });
+    // OK, save it!
+    db.insertRecord('networkProvisioningFields', npf, function (err, record) {
+      if (err) {
+        reject(err)
+      }
+      else {
+        resolve(record)
+      }
+    })
+  })
 }
 
 // Retrieve a networkProvisioningField record by id.
@@ -56,20 +60,20 @@ exports.createNetworkProvisioningField = function( networkProtocolId, fieldOrder
 // id - the record id of the network.
 //
 // Returns a promise that executes the retrieval.
-exports.retrieveNetworkProvisioningField = function( id ) {
-    return new Promise( function ( resolve, reject ) {
-        db.fetchRecord("networkProvisioningFields", "id", id, function ( err, rec ) {
-            if ( err ) {
-                reject( err );
-            }
-            else if ( ! rec ) {
-                reject( new httpError.NotFound );
-            }
-            else {
-                resolve( rec );
-            }
-        });
-    });
+exports.retrieveNetworkProvisioningField = function (id) {
+  return new Promise(function (resolve, reject) {
+    db.fetchRecord('networkProvisioningFields', 'id', id, function (err, rec) {
+      if (err) {
+        reject(err)
+      }
+      else if (!rec) {
+        reject(new httpError.NotFound())
+      }
+      else {
+        resolve(rec)
+      }
+    })
+  })
 }
 
 // Update the networkProvisioningField record.
@@ -78,17 +82,17 @@ exports.retrieveNetworkProvisioningField = function( id ) {
 //          from retrieval to guarantee the same record is updated.
 //
 // Returns a promise that executes the update.
-exports.updateNetworkProvisioningField = function( npf ) {
-    return new Promise( function( resolve, reject ) {
-        db.updateRecord("networkProvisioningFields", "id", npf, function( err, row ) {
-            if ( err ) {
-                reject( err );
-            }
-            else {
-                resolve( row );
-            }
-        });
-    });
+exports.updateNetworkProvisioningField = function (npf) {
+  return new Promise(function (resolve, reject) {
+    db.updateRecord('networkProvisioningFields', 'id', npf, function (err, row) {
+      if (err) {
+        reject(err)
+      }
+      else {
+        resolve(row)
+      }
+    })
+  })
 }
 
 // Delete the networkProvisioningField record.
@@ -96,75 +100,44 @@ exports.updateNetworkProvisioningField = function( npf ) {
 // id - the id of the networkProvisioningField record to delete.
 //
 // Returns a promise that performs the delete.
-exports.deleteNetworkProvisioningField = function( id ) {
-    return new Promise( function ( resolve, reject ) {
-        db.deleteRecord("networkProvisioningFields", "id", id, function( err, rec ) {
-            if ( err ) {
-                reject( err );
-            }
-            else {
-                resolve( rec );
-            }
-        });
-    });
+exports.deleteNetworkProvisioningField = function (id) {
+  return new Promise(function (resolve, reject) {
+    db.deleteRecord('networkProvisioningFields', 'id', id, function (err, rec) {
+      if (err) {
+        reject(err)
+      }
+      else {
+        resolve(rec)
+      }
+    })
+  })
 }
 
-//******************************************************************************
-// Custom retrieval functions.
-//******************************************************************************
+exports.retrieveNetworkProvisioningFields = function (options) {
+  return new Promise(function (resolve, reject) {
+    appLogger.log(options)
+    db.fetchRecords(table, options, function (err, result) {
+      if (err) reject(err)
+      else resolve({ totalCount: result.length, records: result })
+    })
+  })
+}
 
-
-/**
- * Retrieves the field definitions needed for the network and table type.
- *
- * Requires the networkId and the provisioningTablesId.
- *
- * Returns an array of field definition data, each including:
- * fieldOrder    - the sort order key for the fields for display.
- * fieldName     - the name of the field in the JSON structure.
- * fieldLabel    - the field label to display for input.
- * fieldType     - The data type for the field.
- * fieldSize     - Where applicable, the size of the field
- * requiredField - Whether the data is required by the system.
- */
-exports.retrieveNetworkProvisioningFields = function( networkId, tableId ) {
-    return new Promise( function( resolve, reject ) {
-        var q = "select" +
-                " npf.id as id," +
-                " npf.fieldOrder as fieldOrder," +
-                " npf.fieldName as fieldName," +
-                " npf.fieldLabel as fieldLabel," +
-                " npf.fieldType as fieldType," +
-                " npf.fieldSize as fieldSize," +
-                " npf.requiredField as requiredField" +
-                " from networkProvisioningFields npf, networkProtocols np, networks n" +
-                " where npf.networkProtocolId = np.id" +
-                " and np.id = n.networkProtocolId" +
-                " and n.id = " + db.sqlValue( networkId ) +
-                " and npf.provisioningTableId = " + db.sqlValue( tableId ) +
-                " order by fieldOrder";
-        db.select(q, function( err, rows ) {
-            if ( err ) {
-                reject( err );
-            }
-            else {
-                resolve( rows );
-            }
-        });
-    });
+exports.retrieveAllNetworkProvisioningFields = function () {
+  return this.retrieveNetworkProvisioningFields({})
 }
 
 // Gets the types of companies from the database table
-exports.getProvisioningTables = function() {
-    return new Promise( function( resolve, reject ) {
-        var sql = "select * from provisioningTables";
-        db.select(sql, function( err, rows ) {
-            if ( err ) {
-                reject( err );
-            }
-            else {
-                resolve( rows );
-            }
-        });
-    });
+exports.getProvisioningTables = function () {
+  return new Promise(function (resolve, reject) {
+    var sql = 'select * from provisioningTables'
+    db.select(sql, table, options, function (err, rows) {
+      if (err) {
+        reject(err)
+      }
+      else {
+        resolve(rows)
+      }
+    })
+  })
 }

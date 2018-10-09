@@ -15,6 +15,8 @@
     // production where this is added by the system anyway.)
     logging_headers: true
 
+    logging_level: info
+
     //////////////////////////////////////////////////////
     // For JSON Web Tokens, define how the tokens are built.
     ///////////////////////////////////////////////////////

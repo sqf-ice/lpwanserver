@@ -36,10 +36,9 @@ function RestServer (app) {
   // Once a data model is initialized, set up the rest API path using the
   // local rest*API.initialize() method.
   restServer = this
-  return new Promise(async function (resolve, reject) {
     try {
       // Set up the model for the application.
-      this.modelAPI = await new ModelAPI(app)
+      this.modelAPI = new ModelAPI(app)
 
       // Companies.
       restCompaniesAPI.initialize(app, this)
@@ -96,7 +95,6 @@ function RestServer (app) {
       appLogger.log('Could not connect to the database', 'error')
       process.exit(-1)
     }
-  })
 }
 
 // *******************************************************************

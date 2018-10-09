@@ -34,80 +34,74 @@ var modelAPI
 
 function ModelAPI (app) {
   modelAPI = this
-  return new Promise(async function (resolve, reject) {
-    try {
-      var initializer = new Initializer()
-      await initializer.init()
-      // Companies.
-      modelAPI.companies = new CompanyModel(this)
+  try {
+    // Companies.
+    modelAPI.companies = new CompanyModel(this)
 
-      // Password policies.  Manages password rules for companies.
-      modelAPI.passwordPolicies = new PasswordPolicyModel(modelAPI.companies)
+    // Password policies.  Manages password rules for companies.
+    modelAPI.passwordPolicies = new PasswordPolicyModel(modelAPI.companies)
 
-      // Users.  And start the user email verification background task that
-      // expires old email verification records.
-      modelAPI.users = new UserModel()
-      modelAPI.users.emailVerifyInit()
+    // Users.  And start the user email verification background task that
+    // expires old email verification records.
+    modelAPI.users = new UserModel()
+    modelAPI.users.emailVerifyInit()
 
-      // The session model, which uses users (for login).
-      modelAPI.sessions = new SessionManagerModel(modelAPI.users)
+    // The session model, which uses users (for login).
+    modelAPI.sessions = new SessionManagerModel(modelAPI.users)
 
-      // The networkProtocol model.
-      modelAPI.networkProtocols = new NetworkProtocolModel()
+    // The networkProtocol model.
+    modelAPI.networkProtocols = new NetworkProtocolModel()
 
-      // The network model.  Needs the protocols to access the correct api.
-      modelAPI.networks = new NetworkModel(this)
+    // The network model.  Needs the protocols to access the correct api.
+    modelAPI.networks = new NetworkModel(this)
 
-      // The network provider model.
-      modelAPI.networkProviders = new NetworkProviderModel()
+    // The network provider model.
+    modelAPI.networkProviders = new NetworkProviderModel()
 
-      // The network type model.
-      modelAPI.networkTypes = new NetworkTypeModel()
+    // The network type model.
+    modelAPI.networkTypes = new NetworkTypeModel()
 
-      // The NetworkProvisioningFields model.
-      // modelAPI.networkProvisioningFields = new NetworkProvisioningFieldModel();
+    // The NetworkProvisioningFields model.
+    // modelAPI.networkProvisioningFields = new NetworkProvisioningFieldModel();
 
-      // The reportingProtocol model.
-      modelAPI.reportingProtocols = new ReportingProtocolModel()
+    // The reportingProtocol model.
+    modelAPI.reportingProtocols = new ReportingProtocolModel()
 
-      // The applicationNetworkTypeLink model.
-      modelAPI.applicationNetworkTypeLinks = new ApplicationNetworkTypeLinkModel(this)
+    // The applicationNetworkTypeLink model.
+    modelAPI.applicationNetworkTypeLinks = new ApplicationNetworkTypeLinkModel(this)
 
-      // The application model.  Needs the express app because when it starts, it
-      // may need to add new endpoints to receive data from remote networks.
-      modelAPI.applications = new ApplicationModel(app, this)
+    // The application model.  Needs the express app because when it starts, it
+    // may need to add new endpoints to receive data from remote networks.
+    modelAPI.applications = new ApplicationModel(app, this)
 
-      // The networkType API, giving access to the various remote networks of a
-      // given type.
-      modelAPI.networkTypeAPI = new NetworkTypeAPI(this)
+    // The networkType API, giving access to the various remote networks of a
+    // given type.
+    modelAPI.networkTypeAPI = new NetworkTypeAPI(this)
 
-      // The networkProtocol API, giving access to a specific remote network.
-      modelAPI.networkProtocolAPI = new NetworkProtocolAPI(modelAPI.networkProtocols)
+    // The networkProtocol API, giving access to a specific remote network.
+    modelAPI.networkProtocolAPI = new NetworkProtocolAPI(modelAPI.networkProtocols)
 
-      // The companyNetworkTypeLink model.
-      modelAPI.companyNetworkTypeLinks = new CompanyNetworkTypeLinkModel(this)
+    // The companyNetworkTypeLink model.
+    modelAPI.companyNetworkTypeLinks = new CompanyNetworkTypeLinkModel(this)
 
-      modelAPI.reportingProtocolAPIs = new ReportingProtocols(modelAPI.reportingProtocols)
+    modelAPI.reportingProtocolAPIs = new ReportingProtocols(modelAPI.reportingProtocols)
 
-      // The deviceProfile model.
-      modelAPI.deviceProfiles = new DeviceProfileModel(this)
+    // The deviceProfile model.
+    modelAPI.deviceProfiles = new DeviceProfileModel(this)
 
-      // The device model.  It uses applications for some validation.
-      modelAPI.devices = new DeviceModel(this)
+    // The device model.  It uses applications for some validation.
+    modelAPI.devices = new DeviceModel(this)
 
-      // The applicationNetworkTypeLink model.
-      modelAPI.deviceNetworkTypeLinks = new DeviceNetworkTypeLinkModel(this)
+    // The applicationNetworkTypeLink model.
+    modelAPI.deviceNetworkTypeLinks = new DeviceNetworkTypeLinkModel(this)
 
-      // The helper interface for network protocols to use.
-      modelAPI.protocolData = new ProtocolDataModel(this)
-      resolve()
-    }
-    catch (err) {
-      appLogger.log(err.stack, 'error')
-      appLogger.log('Could not connect to the database', 'error')
-      process.exit(-1)
-    }
-  })
+    // The helper interface for network protocols to use.
+    modelAPI.protocolData = new ProtocolDataModel(this)
+  }
+  catch (err) {
+    appLogger.log(err.stack, 'error')
+    appLogger.log('Could not connect to the database', 'error')
+  }
 }
 
 module.exports = ModelAPI

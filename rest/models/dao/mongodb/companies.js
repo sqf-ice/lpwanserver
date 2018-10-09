@@ -7,6 +7,9 @@ var pwVal = require('./passwordPolicies.js')
 // Error reporting
 var httpError = require('http-errors')
 
+
+const table = 'companies'
+
 exports.COMPANY_VENDOR = 2
 exports.COMPANY_ADMIN = 1
 //* *****************************************************************************
@@ -62,16 +65,18 @@ exports.retrieveCompany = function (id) {
       }
       else {
         // Get the networks for this company.
-        var networksQuery = 'select networkTypeId from companyNetworkTypeLinks where companyId = ' + db.sqlValue(id)
-        db.select(networksQuery, function (err, rows) {
-          // Ignore bad returns and null sets here.
-          if (!err && rows && (rows.length > 0)) {
-            // Add the networks array to the returned record.
+        db.fetchRecords('companyNetworkTypeLinks', {companyId: rec._id}, function (err, results) {
+          if (err) {
+            appLogger.log(err, 'error')
+            reject(err)
+          }
+          else {
             rec.networks = []
-            for (var i = 0; i < rows.length; ++i) {
-              rec.networks.push(rows[ i ].networkTypeId)
+            for (var i = 0; i < results.length; ++i) {
+              rec.networks.push(results[i].networkTypeId)
             }
           }
+          appLogger.log(rec, 'warn')
           resolve(rec)
         })
       }
@@ -135,76 +140,18 @@ exports.retrieveCompanybyName = function (name) {
     })
   })
 }
-
-// Retrieves a subset of the companies in the system given the options.
-//
-// Options include limits on the number of companies returned, the offset to
-// the first company returned (together giving a paging capability), and a
-// search string on company name.
-// The returned totalCount shows the number of records that match the query,
-// ignoring any limit and/or offset.
 exports.retrieveCompanies = function (options) {
   return new Promise(function (resolve, reject) {
-    var sql = 'select * from companies'
-    var sqlTotalCount = 'select count(id) as count from companies'
-    if (options) {
-      if (options.search) {
-        sql += ' where name like ' + db.sqlValue(options.search)
-        sqlTotalCount += ' where name like ' + db.sqlValue(options.search)
-      }
-      if (options.limit) {
-        sql += ' limit ' + db.sqlValue(options.limit)
-      }
-      if (options.offset) {
-        sql += ' offset ' + db.sqlValue(options.offset)
-      }
-    }
-    db.select(sql, function (err, rows) {
-      if (err) {
-        reject(err)
-      }
-      else {
-        // Limit and/or offset requires a second search to get a
-        // total count.  Well, usually.  Can also skip if the returned
-        // count is less than the limit (add in the offset to the
-        // returned rows).
-        if (options &&
-                     (options.limit || options.offset)) {
-          // If we got back less than the limit rows, then the
-          // totalCount is the offset and the number of rows.  No
-          // need to run the other query.
-          // Handle if one or the other value is missing.
-          var limit = Number.MAX_VALUE
-          if (options.limit) {
-            limit = options.limit
-          }
-          var offset = 0
-          if (options.offset) {
-            offset = options.offset
-          }
-          if (rows.length < limit) {
-            resolve({ totalCount: offset + rows.length,
-              records: rows })
-          }
-          else {
-            // Must run counts query.
-            db.select(sqlTotalCount, function (err, count) {
-              if (err) {
-                reject(err)
-              }
-              else {
-                resolve({ totalCount: count[0].count,
-                  records: rows })
-              }
-            })
-          }
-        }
-        else {
-          resolve({ totalCount: rows.length, records: rows })
-        }
-      }
+    appLogger.log(options)
+    db.fetchRecords(table, options, function (err, result) {
+      if (err) reject(err)
+      else resolve({ totalCount: result.length, records: result })
     })
   })
+}
+
+exports.retrieveAllCompanies = function () {
+  return this.retrieveAllCompanies({})
 }
 
 //* *****************************************************************************

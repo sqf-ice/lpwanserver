@@ -5,7 +5,7 @@ var stackTrace = require('stack-trace')
 var winston = require('winston')
 
 exports.logger = winston.createLogger({
-  level: 'warn',
+  level: nconf.get('logging-level'),
   transports: [
     new winston.transports.File({
       format: winston.format.combine(
@@ -32,6 +32,7 @@ exports.initRESTCallLogger = function (app) {
 }
 
 exports.log = function (msg, level) {
+  if (!level) level = 'info'
   if (loggingEnabled) {
     var header = ''
     if (loggingHeaders) {
