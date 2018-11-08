@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/cablelabs/lpwanserver/blob/master/schemas/json/normalized/v1/device.json",
+  "title": "Device",
+  "description": "An LPWAN device",
+  "type": "object",
+  "properties": {
+    "applicationID": {
+      "type": "string",
+      "description": "ID of application to which device is assigned"
+    },
+    "description": {
+      "type": "string",
+      "description": "Device description"
+    },
+    "devEUI": {
+      "type": "string",
+      "description": ""
+    },
+    "deviceProfileID": {
+      "type": "string",
+      "description": "ID of the device profile"
+    },
+    "name": {
+      "type": "string",
+      "description": "Device name"
+    },
+    "skipFCntCheck": {
+      "type": "boolean",
+      "description": ""
+    },
+    "deviceStatusBattery": {
+      "type": "number",
+      "description": ""
+    },
+    "deviceStatusMargin": {
+      "type": "number",
+      "description": ""
+    },
+    "lastSeenAt": {
+      "type": "string",
+      "description": "Timestamp of last message received from device",
+      "format": "date-time"
+    }
+}
