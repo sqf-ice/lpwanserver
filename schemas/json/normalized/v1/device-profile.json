@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/cablelabs/lpwanserver/blob/master/schemas/json/normalized/v1/device-profile.json",
+  "title": "Device Profile",
+  "description": "A profile for LPWAN devices",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique ID"
+    },
+    "name": {
+      "type": "string",
+      "description": "Device profile name"
+    },
+    "classBTimeout": {
+      "type": "number",
+      "description": ""
+    },
+    "classCTimeout": {
+      "type": "number",
+      "description": ""
+    },
+    "factoryPresetFreqs": {
+      "type": "array",
+      "description": "",
+      "items": {
+        "type": "number"
+      }
+    },
+    "macVersion": {
+      "type": "string",
+      "description": ""
+    },
+    "maxDutyCycle": {
+      "type": "number",
+      "description": ""
+    },
+    "maxEIRP": {
+      "type": "number",
+      "description": ""
+    },
+    "networkServerID": {
+      "type": "string",
+      "description": ""
+    },
+    "organizationID": {
+      "type": "string",
+      "description": ""
+    },
+    "pingSlotDR": {
+      "type": "number",
+      "description": ""
+    },
+    "pingSlotFreq": {
+      "type": "number",
+      "description": ""
+    },
+    "pingSlotPeriod": {
+      "type": "number",
+      "description": ""
+    },
+    "regParamsRevision": {
+      "type": "string",
+      "description": ""
+    },
+    "rfRegion": {
+      "type": "string",
+      "description": ""
+    },
+    "rxDROffset1": {
+      "type": "number",
+      "description": ""
+    },
+    "rxDataRate2": {
+      "type": "number",
+      "description": ""
+    },
+    "rxDelay1": {
+      "type": "number",
+      "description": ""
+    },
+    "rxFreq2": {
+      "type": "number",
+      "description": ""
+    },
+    "supports32BitFCnt": {
+      "type": "boolean",
+      "description": ""
+    },
+    "supportsClassB": {
+      "type": "boolean",
+      "description": ""
+    },
+    "supportsClassC": {
+      "type": "boolean",
+      "description": ""
+    },
+    "supportsJoin": {
+      "type": "boolean",
+      "description": ""
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/cablelabs/lpwanserver/blob/master/schemas/json/normalized/v1/application.json",
+  "title": "Application",
+  "description": "An LPWAN Application",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique ID"
+    },
+    "description": {
+      "type": "string",
+      "description": "Application description"
+    },
+    "name": {
+      "type": "string",
+      "description": "Application name"
+    },
+    "organizationID": {
+      "type": "string",
+      "description": ""
+    },
+    "payloadCodec": {
+      "type": "string",
+      "description": ""
+    },
+    "payloadDecoderScript": {
+      "type": "string",
+      "description": ""
+    },
+    "payloadEncoderScript": {
+      "type": "string",
+      "description": ""
+    },
+    "validationScript": {
+      "type": "string",
+      "description": ""
+    },
+    "serviceProfileID": {
+      "type": "string",
+      "description": ""
+    },
+    "cansend": {
+      "type": "boolean",
+      "description": ""
+    },
+    "deviceLimit": {
+      "type": "number",
+      "description": ""
+    },
+    "devices": {
+      "type": "number",
+      "description": ""
+    },
+    "overbosity": {
+      "type": "string",
+      "description": ""
+    },
+    "ogwinfo": {
+      "type": "string",
+      "description": ""
+    },
+    "orx": {
+      "type": "boolean",
+      "description": ""
+    },
+    "canotaa": {
+      "type": "boolean",
+      "description": ""
+    },
+    "suspended": {
+      "type": "boolean",
+      "description": ""
+    },
+    "clientsLimit": {
+      "type": "number",
+      "description": ""
+    },
+    "applicationEUI": {
+      "type": "string",
+      "description": ""
+    },
+    "key": {
+      "type": "string",
+      "description": ""
+    },
+    "joinServer": {
+      "$ref": "#/definitions/JoinServer"
+    }
+  },
+  "definitions": {
+    "JoinServer": {
+      "type": "object",
+      "properties": {
+        
+      }
+    }
+  }
+}

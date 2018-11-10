@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/cablelabs/lpwanserver/blob/master/schemas/json/normalized/v1/integration.json",
+  "title": "Integration",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "ackNotificationURL": {
+      "type": "string",
+      "description": ""
+    },
+    "applicationID": {
+      "type": "string",
+      "description": ""
+    },
+    "errorNotificationURL": {
+      "type": "string",
+      "description": ""
+    },
+    "headers": {
+      "type": "array",
+      "description": "",
+      "items": {
+        "$ref": "#/definitions/header"
+      }
+    },
+    "joinNotificationURL": {
+      "type": "string",
+      "description": ""
+    },
+    "uplinkDataURL": {
+      "type": "string",
+      "description": ""
+    }
+  },
+  "definitions": {
+    "header": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "value"
+      ]
+    }
+  }
+}
