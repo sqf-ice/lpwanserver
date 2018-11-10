@@ -1,0 +1,84 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "id",
+    "companyId",
+    "name",
+    "baseUrl",
+    "reportingProtocolId",
+    "description",
+    "running"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": "integer",
+      "title": "The Id Schema",
+      "default": 0,
+      "examples": [
+        1
+      ]
+    },
+    "companyId": {
+      "$id": "#/properties/companyId",
+      "type": "integer",
+      "title": "The Companyid Schema",
+      "default": 0,
+      "examples": [
+        2
+      ]
+    },
+    "name": {
+      "$id": "#/properties/name",
+      "type": "string",
+      "title": "The Name Schema",
+      "default": "",
+      "examples": [
+        "BobMouseTrapLv2"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "baseUrl": {
+      "$id": "#/properties/baseUrl",
+      "type": "string",
+      "title": "The Baseurl Schema",
+      "default": "",
+      "examples": [
+        "http://localhost:9999"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "reportingProtocolId": {
+      "$id": "#/properties/reportingProtocolId",
+      "type": "integer",
+      "title": "The Reportingprotocolid Schema",
+      "default": 0,
+      "examples": [
+        1
+      ]
+    },
+    "description": {
+      "$id": "#/properties/description",
+      "type": "string",
+      "title": "The Description Schema",
+      "default": "",
+      "examples": [
+        "CableLabs Test Application"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "running": {
+      "$id": "#/properties/running",
+      "type": "boolean",
+      "title": "The Running Schema",
+      "default": false,
+      "examples": [
+        false
+      ]
+    }
+  }
+}

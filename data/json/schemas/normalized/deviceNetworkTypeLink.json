@@ -1,0 +1,262 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "id",
+    "deviceId",
+    "networkTypeId",
+    "deviceProfileId",
+    "networkSettings"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": "integer",
+      "title": "The Id Schema",
+      "default": 0,
+      "examples": [
+        1
+      ]
+    },
+    "deviceId": {
+      "$id": "#/properties/deviceId",
+      "type": "integer",
+      "title": "The Deviceid Schema",
+      "default": 0,
+      "examples": [
+        1
+      ]
+    },
+    "networkTypeId": {
+      "$id": "#/properties/networkTypeId",
+      "type": "integer",
+      "title": "The Networktypeid Schema",
+      "default": 0,
+      "examples": [
+        1
+      ]
+    },
+    "deviceProfileId": {
+      "$id": "#/properties/deviceProfileId",
+      "type": "integer",
+      "title": "The Deviceprofileid Schema",
+      "default": 0,
+      "examples": [
+        1
+      ]
+    },
+    "networkSettings": {
+      "$id": "#/properties/networkSettings",
+      "type": "object",
+      "title": "The Networksettings Schema",
+      "required": [
+        "applicationID",
+        "description",
+        "devEUI",
+        "deviceProfileID",
+        "name",
+        "skipFCntCheck",
+        "deviceStatusBattery",
+        "deviceStatusMargin",
+        "lastSeenAt",
+        "deviceActivation"
+      ],
+      "properties": {
+        "applicationID": {
+          "$id": "#/properties/networkSettings/properties/applicationID",
+          "type": "string",
+          "title": "The Applicationid Schema",
+          "default": "",
+          "examples": [
+            "2"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "description": {
+          "$id": "#/properties/networkSettings/properties/description",
+          "type": "string",
+          "title": "The Description Schema",
+          "default": "",
+          "examples": [
+            "Test Device for E2E"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "devEUI": {
+          "$id": "#/properties/networkSettings/properties/devEUI",
+          "type": "string",
+          "title": "The Deveui Schema",
+          "default": "",
+          "examples": [
+            "1122334455667788"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "deviceProfileID": {
+          "$id": "#/properties/networkSettings/properties/deviceProfileID",
+          "type": "string",
+          "title": "The Deviceprofileid Schema",
+          "default": "",
+          "examples": [
+            "9dd538e8-a231-4a35-8823-eecbffb9d4a9"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "name": {
+          "$id": "#/properties/networkSettings/properties/name",
+          "type": "string",
+          "title": "The Name Schema",
+          "default": "",
+          "examples": [
+            "BobMouseTrapDeviceLv2"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "skipFCntCheck": {
+          "$id": "#/properties/networkSettings/properties/skipFCntCheck",
+          "type": "boolean",
+          "title": "The Skipfcntcheck Schema",
+          "default": false,
+          "examples": [
+            false
+          ]
+        },
+        "deviceStatusBattery": {
+          "$id": "#/properties/networkSettings/properties/deviceStatusBattery",
+          "type": "integer",
+          "title": "The Devicestatusbattery Schema",
+          "default": 0,
+          "examples": [
+            256
+          ]
+        },
+        "deviceStatusMargin": {
+          "$id": "#/properties/networkSettings/properties/deviceStatusMargin",
+          "type": "integer",
+          "title": "The Devicestatusmargin Schema",
+          "default": 0,
+          "examples": [
+            256
+          ]
+        },
+        "lastSeenAt": {
+          "$id": "#/properties/networkSettings/properties/lastSeenAt",
+          "type": "null",
+          "title": "The Lastseenat Schema",
+          "default": null,
+          "examples": [
+            null
+          ]
+        },
+        "deviceActivation": {
+          "$id": "#/properties/networkSettings/properties/deviceActivation",
+          "type": "object",
+          "title": "The Deviceactivation Schema",
+          "required": [
+            "aFCntDown",
+            "appSKey",
+            "devAddr",
+            "devEUI",
+            "fCntUp",
+            "nFCntDown",
+            "nwkSEncKey",
+            "sNwkSIntKey",
+            "fNwkSIntKey"
+          ],
+          "properties": {
+            "aFCntDown": {
+              "$id": "#/properties/networkSettings/properties/deviceActivation/properties/aFCntDown",
+              "type": "integer",
+              "title": "The Afcntdown Schema",
+              "default": 0,
+              "examples": [
+                0
+              ]
+            },
+            "appSKey": {
+              "$id": "#/properties/networkSettings/properties/deviceActivation/properties/appSKey",
+              "type": "string",
+              "title": "The Appskey Schema",
+              "default": "",
+              "examples": [
+                "204bc999b089983dceaef567d111722c"
+              ],
+              "pattern": "^(.*)$"
+            },
+            "devAddr": {
+              "$id": "#/properties/networkSettings/properties/deviceActivation/properties/devAddr",
+              "type": "string",
+              "title": "The Devaddr Schema",
+              "default": "",
+              "examples": [
+                "f9bde723"
+              ],
+              "pattern": "^(.*)$"
+            },
+            "devEUI": {
+              "$id": "#/properties/networkSettings/properties/deviceActivation/properties/devEUI",
+              "type": "string",
+              "title": "The Deveui Schema",
+              "default": "",
+              "examples": [
+                ""
+              ],
+              "pattern": "^(.*)$"
+            },
+            "fCntUp": {
+              "$id": "#/properties/networkSettings/properties/deviceActivation/properties/fCntUp",
+              "type": "integer",
+              "title": "The Fcntup Schema",
+              "default": 0,
+              "examples": [
+                0
+              ]
+            },
+            "nFCntDown": {
+              "$id": "#/properties/networkSettings/properties/deviceActivation/properties/nFCntDown",
+              "type": "integer",
+              "title": "The Nfcntdown Schema",
+              "default": 0,
+              "examples": [
+                0
+              ]
+            },
+            "nwkSEncKey": {
+              "$id": "#/properties/networkSettings/properties/deviceActivation/properties/nwkSEncKey",
+              "type": "string",
+              "title": "The Nwksenckey Schema",
+              "default": "",
+              "examples": [
+                "5a3a19306f85f9ae25545dc45d6f324b"
+              ],
+              "pattern": "^(.*)$"
+            },
+            "sNwkSIntKey": {
+              "$id": "#/properties/networkSettings/properties/deviceActivation/properties/sNwkSIntKey",
+              "type": "string",
+              "title": "The Snwksintkey Schema",
+              "default": "",
+              "examples": [
+                "5a3a19306f85f9ae25545dc45d6f324b"
+              ],
+              "pattern": "^(.*)$"
+            },
+            "fNwkSIntKey": {
+              "$id": "#/properties/networkSettings/properties/deviceActivation/properties/fNwkSIntKey",
+              "type": "string",
+              "title": "The Fnwksintkey Schema",
+              "default": "",
+              "examples": [
+                "5a3a19306f85f9ae25545dc45d6f324b"
+              ],
+              "pattern": "^(.*)$"
+            }
+          }
+        }
+      }
+    }
+  }
+}

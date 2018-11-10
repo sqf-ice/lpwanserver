@@ -1,0 +1,63 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "id",
+    "applicationId",
+    "name",
+    "deviceModel",
+    "description"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": "integer",
+      "title": "The Id Schema",
+      "default": 0,
+      "examples": [
+        1
+      ]
+    },
+    "applicationId": {
+      "$id": "#/properties/applicationId",
+      "type": "integer",
+      "title": "The Applicationid Schema",
+      "default": 0,
+      "examples": [
+        1
+      ]
+    },
+    "name": {
+      "$id": "#/properties/name",
+      "type": "string",
+      "title": "The Name Schema",
+      "default": "",
+      "examples": [
+        "BobMouseTrapDeviceLv2"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "deviceModel": {
+      "$id": "#/properties/deviceModel",
+      "type": "string",
+      "title": "The Devicemodel Schema",
+      "default": null,
+      "examples": [
+        null
+      ]
+    },
+    "description": {
+      "$id": "#/properties/description",
+      "type": "string",
+      "title": "The Description Schema",
+      "default": "",
+      "examples": [
+        "Test Device for E2E"
+      ],
+      "pattern": "^(.*)$"
+    }
+  }
+}
