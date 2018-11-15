@@ -3,6 +3,11 @@ version: '2'
 services:
   e2e-test:
     image: lpwanserver/e2e-test
+    depends_on:
+      - loraserver
+      - loraserver1
+      - lora_appserver
+      - lora_appserver1
     environment:
     - NODE_ENV=e2e
     - PORT=3200

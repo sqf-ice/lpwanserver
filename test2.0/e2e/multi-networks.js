@@ -5,7 +5,7 @@ var app = require('../../restApp.js')
 var should = chai.should()
 var setup = require('./setup.js')
 var appLogger = require('../../rest/lib/appLogger.js')
-var request = require('request')
+var request = require('request-promise')
 
 chai.use(chaiHttp)
 var server = chai.request(app).keepOpen()
@@ -36,6 +36,14 @@ describe('E2E Test for Multiple Networks', () => {
       apps: []
 
     }
+  }
+
+  var ttnSecurityData = {
+    authorized: false,
+    username: 'dschrimpsherr',
+    password: 'Ultimum01',
+    clientId: 'lpwan-test-3',
+    clientSecret: 'ltMSL0cmIVkzBYQZndZ8slzF37qLMjRm7sXXt4qcekyCq3YEoLMf9rQr'
   }
 
   before((done) => {
@@ -263,13 +271,7 @@ describe('E2E Test for Multiple Networks', () => {
             'networkTypeId': 1,
             'baseUrl': 'https://account.thethingsnetwork.org',
             'networkProtocolId': lora.ttn.protocolId,
-            'securityData': {
-              authorized: false,
-              username: 'dschrimpsherr',
-              password: 'Ultimum01',
-              clientId: 'lpwan-test-3',
-              clientSecret: 'ltMSL0cmIVkzBYQZndZ8slzF37qLMjRm7sXXt4qcekyCq3YEoLMf9rQr'
-            }
+            'securityData': ttnSecurityData
           })
           .end(function (err, res) {
             if (err) done(err)
@@ -1061,6 +1063,69 @@ describe('E2E Test for Multiple Networks', () => {
             lora.ttn.apps[0].deviceNTLIds.push(deviceNTL.id)
             done()
           })
+      })
+    })
+
+    describe('Cleanup TTN e2e test data', () => {
+      const baseUrl = 'https://account.thethingsnetwork.org'
+      let apps
+      let access_token
+      let apps_access_token
+
+      it('E2E test authenticates with TTN directly', async () => {
+        let auth = Buffer
+          .from(`${ttnSecurityData.clientId}:${ttnSecurityData.clientSecret}`)
+          .toString('base64')
+        const opts = {
+          method: 'POST',
+          url: `${baseUrl}/users/token`,
+          headers: { authorization: `Basic ${auth}` },
+          json: true,
+          body: {
+            grant_type: 'password',
+            username: ttnSecurityData.username,
+            password: ttnSecurityData.password,
+            scope: ['apps', 'gateways', 'components']
+          }
+        }
+        const body = await request(opts)
+        assert.ok(typeof body.access_token === 'string', 'No access token on authentication response.')
+        access_token = body.access_token
+      })
+
+      it('Get a list of applications', async () => {
+        const opts = {
+          url: `${baseUrl}/applications`,
+          headers: { authorization: `Bearer ${access_token}` },
+          json: true
+        }
+        const body = await request(opts)
+        assert.ok(Array.isArray(body), 'Get applications response is not an array.')
+        apps = body
+      })
+
+      it('Gets a token with app IDs scope', async () => {
+        const opts = {
+          method: 'POST',
+          url: `${baseUrl}/users/restrict-token`,
+          headers: { authorization: `Bearer ${access_token}` },
+          json: true,
+          body: {
+            scope: apps.map(x => `apps:${x.id}`)
+          }
+        }
+        const body = await request(opts)
+        assert.ok(typeof body.access_token === 'string', 'No access token on restrict-token response.')
+        apps_access_token = body.access_token
+      })
+
+      it('Deletes all applications', async () => {
+        const deleteApp = ({ id }) => request({
+          method: 'DELETE',
+          url: `${baseUrl}/applications/${id}`,
+          headers: { authorization: `Bearer ${apps_access_token}` }
+        })
+        return Promise.all(apps.map(deleteApp))
       })
     })
   })
