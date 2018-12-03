@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-#Prune docker, can cause problems if not pruned
 docker system prune --force
 
 npm run package-test
