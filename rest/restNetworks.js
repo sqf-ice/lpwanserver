@@ -346,6 +346,11 @@ exports.initialize = function (app, server) {
       return
     }
 
+    // Issue 176, Remove trailing '/' in the url if there
+    if (rec.baseUrl.charAt(rec.baseUrl.length - 1) === '/') {
+      rec.baseUrl = rec.baseUrl.substr(0, rec.baseUrl.length - 1)
+    }
+
     if (!rec.securityData) {
       rec.securityData = {
         authorized: false,
@@ -459,11 +464,20 @@ exports.initialize = function (app, server) {
     restServer.isAdminCompany],
   function (req, res, next) {
     var data = req.body
+    var pullFlag = (data.securityData && data.securityData.authorized === false)
     data.id = parseInt(req.params.id)
     modelAPI.networks.updateNetwork(data)
       .then(function (rec) {
         modelAPI.networks.retrieveNetwork(rec.id)
           .then((network) => {
+            if (!network.securityData) {
+              network.securityData = {
+                authorized: false,
+                message: 'Pending Authorization',
+                enabled: false
+              }
+            }
+
             let temp = {
               authorized: network.securityData.authorized,
               message: network.securityData.message,
@@ -483,6 +497,9 @@ exports.initialize = function (app, server) {
             network.securityData = temp
 
             if (network.securityData.authorized === false) {
+              restServer.respond(res, 200, network)
+            }
+            else if (!pullFlag) {
               restServer.respond(res, 200, network)
             }
             else {

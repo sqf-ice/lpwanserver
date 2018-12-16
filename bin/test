@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-
 docker container rm docker_postgresql_1 --force
-sudo rm -rf ./data/demo_data
-sudo cp -r ./data/demo_baseline ./data/demo_data
+
+npm run package
 
 # Run docker-compose with development configuration
-docker-compose -f ./docker/docker-compose-test.yml up
+docker-compose \
+  -f ./docker/docker-compose.loraserver.yml \
+  -f ./docker/docker-compose.test.yml up

@@ -228,12 +228,12 @@ NetworkTypeApi.prototype.addApplication = function (networkTypeId, applicationId
 //                 network.
 //
 // Returns a Promise that pushes changes to the remote network of type.
-NetworkTypeApi.prototype.pushApplication = function (networkTypeId, applicationId) {
+NetworkTypeApi.prototype.pushApplication = function (networkTypeId, application) {
   return createPromiseOperationForNetworksOfType(
     'Push Application',
     networkTypeId,
     function (npda, network) {
-      return protos.pushApplication(npda, network, applicationId)
+      return protos.pushApplication(npda, network, application)
     })
 }
 
@@ -422,12 +422,12 @@ NetworkTypeApi.prototype.addDevice = function (networkTypeId, deviceId) {
 // deviceId      - The deviceId for the device to "push" to the remote network.
 //
 // Returns a Promise that pushes changes to the remote network of type.
-NetworkTypeApi.prototype.pushDevice = function (networkTypeId, deviceId) {
+NetworkTypeApi.prototype.pushDevice = function (networkTypeId, device) {
   return createPromiseOperationForNetworksOfType(
     'Push Device',
     networkTypeId,
     function (npda, network) {
-      return protos.pushDevice(npda, network, deviceId)
+      return protos.pushDevice(npda, network, device)
     })
 }
 

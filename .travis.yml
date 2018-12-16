@@ -1,10 +1,19 @@
-
 language: node_js
-sudo: true
+sudo: required
 node_js:
   - "8.11"
+services:
+  - docker
 install:
   - npm install
-  - cp ./data/test.sqlite3.testSuiteStartingDB /tmp/test.sqlite3
+before_script:
+  - npm run package
 script:
-  - npm test
+  - ./bin/unit-tests
+before_deploy:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+deploy:
+  provider: script
+  script: docker push lpwanserver/lpwanserver
+  on:
+    branch: master
